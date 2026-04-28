@@ -1,14 +1,50 @@
 @import "tailwindcss";
 
 /* ── Design tokens ─────────────────────────────────────────── */
-@theme {
-  --color-app-bg:      #161a1f;
-  --color-app-surface: #1c2126;
-  --color-app-card:    #212529;
-  --color-app-border:  #2d3340;
-  --color-app-text:    #acacac;
-  --color-app-green:   #22c55e;
+:root {
+  --color-primary: #2856e1;
+  --color-secondary: #00a6ff;
+  --color-muted: #4f5d75;
+  --color-light-bg: #e0f5ff;
+  --color-dark-bg: #10105A;
+
+  /* Default to dark if no class is present, though ThemeProvider handles it */
+  --color-app-bg: #10105A;
+  --color-app-surface: #1a1a6a;
+  --color-app-card: #1f1f7a;
+  --color-app-border: #2a2a8a;
+  --color-app-text: #e0f5ff;
+  --color-app-green: #22c55e;
   --color-app-green-light: #86efac;
+}
+
+.dark {
+  --color-app-bg: #10105A;
+  --color-app-surface: #1a1a6a;
+  --color-app-card: #1f1f7a;
+  --color-app-border: #2a2a8a;
+  --color-app-text: #e0f5ff;
+}
+
+.light {
+  --color-app-bg: #e0f5ff;
+  --color-app-surface: #f0faff;
+  --color-app-card: #ffffff;
+  --color-app-border: #d0eaff;
+  --color-app-text: #10105A;
+}
+
+@theme {
+  --color-app-bg: var(--color-app-bg);
+  --color-app-surface: var(--color-app-surface);
+  --color-app-card: var(--color-app-card);
+  --color-app-border: var(--color-app-border);
+  --color-app-text: var(--color-app-text);
+  --color-app-green: var(--color-app-green);
+  --color-app-green-light: var(--color-app-green-light);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-muted: var(--color-muted);
 }
 
 /* ── Base ────────────────────────────────────────────────────── */
@@ -125,7 +161,7 @@ div > .label_title {
   border-radius: 100%;
   width: 30px;
   height: 30px;
-  background-color: #4b5563;
+  background-color: var(--color-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -133,7 +169,7 @@ div > .label_title {
   transition: background-color 0.3s;
 }
 .__avatar:hover {
-  background-color: #374151;
+  background-color: var(--color-primary);
 }
 
 /* ── Print utilities ────────────────────────────────────────── */
@@ -150,5 +186,5 @@ div > .label_title {
 /* ── Scrollbar ──────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-app-bg); }
-::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+::-webkit-scrollbar-thumb { background: var(--color-muted); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }

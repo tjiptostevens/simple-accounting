@@ -35,8 +35,8 @@ const Login = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#161a1f]">
-        <span className="text-green-400 animate-pulse">Loading…</span>
+      <div className="flex items-center justify-center h-screen bg-app-bg">
+        <span className="text-primary animate-pulse">Loading…</span>
       </div>
     )
   }
@@ -44,11 +44,11 @@ const Login = () => {
   const comp = company?.[0]
 
   return (
-    <div className="min-h-screen bg-[#161a1f] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-app-bg flex flex-col items-center justify-center px-4">
       {/* Card */}
-      <div className="w-full max-w-md bg-[#1c2126] rounded-xl shadow-2xl overflow-hidden">
+      <div className="w-full max-w-md bg-app-surface rounded-xl shadow-2xl overflow-hidden border border-app-border">
         {/* Header banner */}
-        <div className="bg-green-600 px-8 py-5 text-center">
+        <div className="bg-primary px-8 py-5 text-center">
           <img
             src="/assets/img/logo192.png"
             alt="logo"
@@ -62,11 +62,11 @@ const Login = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="px-8 py-8 space-y-5">
-          <h2 className="text-white text-lg font-semibold text-center">Sign In</h2>
+          <h2 className="text-app-text text-lg font-semibold text-center">Sign In</h2>
 
           {/* Email */}
           <div>
-            <label className="block text-sm text-gray-400 mb-1" htmlFor="email">
+            <label className="block text-sm text-muted mb-1" htmlFor="email">
               Email
             </label>
             <input
@@ -78,13 +78,13 @@ const Login = () => {
               value={form.email}
               onChange={handleChange}
               placeholder="you@example.com"
-              className="w-full bg-[#212529] border border-[#2d3340] text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-green-500 transition"
+              className="w-full bg-app-card border border-app-border text-app-text rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition"
             />
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm text-gray-400 mb-1" htmlFor="password">
+            <label className="block text-sm text-muted mb-1" htmlFor="password">
               Password
             </label>
             <input
@@ -95,7 +95,7 @@ const Login = () => {
               value={form.password}
               onChange={handleChange}
               placeholder="••••••••"
-              className="w-full bg-[#212529] border border-[#2d3340] text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-green-500 transition"
+              className="w-full bg-app-card border border-app-border text-app-text rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition"
             />
           </div>
 
@@ -108,7 +108,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={busy}
-            className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-60 text-white font-semibold rounded-lg py-2.5 text-sm transition"
+            className="w-full bg-primary hover:bg-secondary disabled:opacity-60 text-white font-semibold rounded-lg py-2.5 text-sm transition"
           >
             {busy ? 'Signing in…' : 'Sign In'}
           </button>
@@ -116,14 +116,14 @@ const Login = () => {
 
         {/* Footer info */}
         {comp && (
-          <div className="px-8 pb-6 text-xs text-gray-500 space-y-0.5 border-t border-[#2d3340] pt-4">
+          <div className="px-8 pb-6 text-xs text-muted space-y-0.5 border-t border-app-border pt-4">
             {comp.address && <p>{comp.address.replace(/<br ?\/?>/g, ' ')}, {comp.city}</p>}
             {comp.phone   && <p>Phone: {comp.phone}</p>}
             {comp.email   && <p>Email: {comp.email}</p>}
           </div>
         )}
 
-        <p className="text-center text-gray-600 text-xs pb-4">
+        <p className="text-center text-muted text-xs pb-4 opacity-70">
           © {new Date().getFullYear()} Simple Accounting — open source
         </p>
       </div>

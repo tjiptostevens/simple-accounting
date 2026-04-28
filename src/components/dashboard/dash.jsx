@@ -108,10 +108,10 @@ const Dash = () => {
     (newCoa &&
       newCoa.filter((f) => f.number === "320").map((g) => parseFloat(g.total)));
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="text-app-text">Loading...</div>;
   }
   if (isError) {
-    return <div>Error! {error.message}</div>;
+    return <div className="text-red-400">Error! {error.message}</div>;
   }
   return (
     <>
@@ -129,7 +129,7 @@ const Dash = () => {
               visibility: "hidden",
             }}
           >
-            <button className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer">
+            <button className="m-1 px-3 py-1.5 bg-primary hover:bg-secondary text-white text-sm rounded-lg transition-colors cursor-pointer border-none">
               <i className="bi bi-plus"></i>
               New
             </button>
@@ -148,8 +148,8 @@ const Dash = () => {
           className="md:w-1/4 w-1/2"
           style={{ margin: "0", padding: "5px", borderRadius: "5px" }}
         >
-          <div className="bg-[#212529] rounded">
-            <div className="p-3 border-b border-gray-700" style={{ color: "white" }}>
+          <div className="bg-app-card rounded border border-app-border">
+            <div className="p-3 border-b border-app-border" style={{ color: "var(--color-app-text)" }}>
               <b>CASH</b>
             </div>
             <div
@@ -177,8 +177,8 @@ const Dash = () => {
           className="md:w-1/4 w-1/2"
           style={{ margin: "0", padding: "5px", borderRadius: "5px" }}
         >
-          <div className="bg-[#212529] rounded">
-            <div className="p-3 border-b border-gray-700" style={{ color: "white" }}>
+          <div className="bg-app-card rounded border border-app-border">
+            <div className="p-3 border-b border-app-border" style={{ color: "var(--color-app-text)" }}>
               <b>BANK</b>
             </div>
             <div
@@ -206,8 +206,8 @@ const Dash = () => {
           className="md:w-1/4 w-1/2"
           style={{ margin: "0", padding: "5px", borderRadius: "5px" }}
         >
-          <div className="bg-[#212529] rounded">
-            <div className="p-3 border-b border-gray-700" style={{ color: "white" }}>
+          <div className="bg-app-card rounded border border-app-border">
+            <div className="p-3 border-b border-app-border" style={{ color: "var(--color-app-text)" }}>
               <b>RECEIVABLE</b>
             </div>
             <div
@@ -235,8 +235,8 @@ const Dash = () => {
           className="md:w-1/4 w-1/2"
           style={{ margin: "0", padding: "5px", borderRadius: "5px" }}
         >
-          <div className="bg-[#212529] rounded">
-            <div className="p-3 border-b border-gray-700" style={{ color: "white" }}>
+          <div className="bg-app-card rounded border border-app-border">
+            <div className="p-3 border-b border-app-border" style={{ color: "var(--color-app-text)" }}>
               <b>PAYABLE</b>
             </div>
             <div
@@ -271,21 +271,21 @@ const Dash = () => {
         }}
       >
         <div
-          className="flex flex-wrap"
+          className="flex flex-wrap border border-app-border shadow-sm"
           style={{
             margin: "0",
             padding: "25px 15px",
-            color: "white",
+            color: "var(--color-app-text)",
             borderRadius: "5px",
             textAlign: "center",
-            background: "#212529",
+            background: "var(--color-app-card)",
           }}
         >
           <div className="md:w-1/4">
             <div>
               <p>Total Assets</p>
               <h5
-                style={assets < 0 ? { color: "crimson" } : { color: "white" }}
+                style={assets < 0 ? { color: "crimson" } : { color: "var(--color-app-text)" }}
               >
                 Rp.{" "}
                 {assets.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +
@@ -305,7 +305,7 @@ const Dash = () => {
             <div
               style={{
                 margin: "auto",
-                border: "1px solid white",
+                border: "1px solid var(--color-app-border)",
                 width: "25px",
                 height: "25px",
                 fontFamily: "monospace",
@@ -324,7 +324,7 @@ const Dash = () => {
               <p>Total Liability</p>
               <h5
                 style={
-                  liability < 0 ? { color: "crimson" } : { color: "white" }
+                  liability < 0 ? { color: "crimson" } : { color: "var(--color-app-text)" }
                 }
               >
                 Rp.{" "}
@@ -346,7 +346,7 @@ const Dash = () => {
             <div
               style={{
                 margin: "auto",
-                border: "1px solid white",
+                border: "1px solid var(--color-app-border)",
                 width: "25px",
                 height: "25px",
                 fontFamily: "monospace",
@@ -364,7 +364,7 @@ const Dash = () => {
             <div>
               <p>Total Equity</p>
               <h5
-                style={equity < 0 ? { color: "crimson" } : { color: "white" }}
+                style={equity < 0 ? { color: "crimson" } : { color: "var(--color-app-text)" }}
               >
                 Rp.{" "}
                 {(equity + pl)
@@ -385,21 +385,21 @@ const Dash = () => {
         }}
       >
         <div
-          className="flex flex-wrap"
+          className="flex flex-wrap border border-app-border shadow-sm"
           style={{
             margin: "0",
             padding: "25px 15px",
-            color: "white",
+            color: "var(--color-app-text)",
             borderRadius: "5px",
             textAlign: "center",
-            background: "#212529",
+            background: "var(--color-app-card)",
           }}
         >
           <div className="md:w-1/4">
             <div>
               <p>Total Income This Period</p>
               <h5
-                style={income < 0 ? { color: "crimson" } : { color: "white" }}
+                style={income < 0 ? { color: "crimson" } : { color: "var(--color-app-text)" }}
               >
                 Rp.{" "}
                 {income.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +
@@ -419,7 +419,7 @@ const Dash = () => {
             <div
               style={{
                 margin: "auto",
-                border: "1px solid white",
+                border: "1px solid var(--color-app-border)",
                 width: "25px",
                 height: "25px",
                 fontFamily: "monospace",
@@ -437,7 +437,7 @@ const Dash = () => {
             <div>
               <p>Total Expense This Period</p>
               <h5
-                style={expense < 0 ? { color: "crimson" } : { color: "white" }}
+                style={expense < 0 ? { color: "crimson" } : { color: "var(--color-app-text)" }}
               >
                 Rp.{" "}
                 {expense.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +
@@ -457,7 +457,7 @@ const Dash = () => {
             <div
               style={{
                 margin: "auto",
-                border: "1px solid white",
+                border: "1px solid var(--color-app-border)",
                 width: "25px",
                 height: "25px",
                 fontFamily: "monospace",
@@ -479,7 +479,7 @@ const Dash = () => {
                   income - expense < 0
                     ? { color: "crimson" }
                     : income - expense === 0
-                    ? { color: "white" }
+                    ? { color: "var(--color-app-text)" }
                     : { color: "limegreen" }
                 }
               >

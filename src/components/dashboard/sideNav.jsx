@@ -12,8 +12,8 @@ const NavItem = ({ to, icon, children }) => (
       className={({ isActive }) =>
         `flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors no-underline ${
           isActive
-            ? 'bg-green-700 text-white font-semibold'
-            : 'text-gray-400 hover:text-white hover:bg-[#2d3340]'
+            ? 'bg-primary text-white font-semibold'
+            : 'text-app-text opacity-70 hover:opacity-100 hover:bg-app-bg'
         }`
       }
     >
@@ -24,7 +24,7 @@ const NavItem = ({ to, icon, children }) => (
 )
 
 const SectionLabel = ({ children }) => (
-  <p className="__subtitle px-4 mt-4 mb-1">{children}</p>
+  <p className="__subtitle px-4 mt-4 mb-1 text-muted">{children}</p>
 )
 
 const SideNav = () => {
@@ -38,15 +38,15 @@ const SideNav = () => {
 
   if (isLoading) {
     return (
-      <div className="__side_nav bg-[#1c2126] p-4 flex flex-col gap-2">
-        <span className="text-gray-400 text-xs animate-pulse">Loading…</span>
+      <div className="__side_nav bg-app-surface p-4 flex flex-col gap-2">
+        <span className="text-muted text-xs animate-pulse">Loading…</span>
       </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="__side_nav bg-[#1c2126] p-4">
+      <div className="__side_nav bg-app-surface p-4">
         <span className="text-red-400 text-xs">Error loading periods</span>
       </div>
     )
@@ -55,27 +55,27 @@ const SideNav = () => {
   const activePeriod = period?.find((p) => p.status === 1)
 
   return (
-    <aside className="__side_nav bg-[#1c2126] py-3 flex flex-col gap-1 border-r border-[#2d3340]">
+    <aside className="__side_nav bg-app-surface py-3 flex flex-col gap-1 border-r border-app-border">
       {/* Logo / Brand */}
       <div className="px-4 mb-2 flex items-center gap-2">
         <img src={logo} alt="logo" className="w-6 h-6 rounded" />
-        <span className="text-white font-bold text-sm">PITARA</span>
+        <span className="text-app-text font-bold text-sm">PITARA</span>
       </div>
 
       {/* Active Period Badge */}
       {activePeriod && (
-        <div className="mx-3 mb-2 bg-green-700 rounded-lg px-3 py-2 text-center">
-          <p className="__subtitle text-xs text-green-200 mb-0.5">ACTIVE PERIOD</p>
+        <div className="mx-3 mb-2 bg-primary rounded-lg px-3 py-2 text-center shadow-sm">
+          <p className="__subtitle text-[10px] text-white opacity-80 mb-0.5">ACTIVE PERIOD</p>
           <NavLink to="/d/period" className="no-underline">
             <span className="text-white text-sm font-semibold">{activePeriod.name}</span>
             {activePeriod.description && (
-              <p className="text-green-200 text-xs mt-0.5">{activePeriod.description}</p>
+              <p className="text-white opacity-70 text-[10px] mt-0.5">{activePeriod.description}</p>
             )}
           </NavLink>
         </div>
       )}
 
-      <hr className="border-[#2d3340] mx-3" />
+      <hr className="border-app-border mx-3" />
 
       {/* MASTER (admin only) */}
       {isAdmin && (
@@ -88,7 +88,7 @@ const SideNav = () => {
             <NavItem to="/d/user"           icon="bi-person-square">User</NavItem>
             <NavItem to="/d/customer"       icon="bi-people">Customer</NavItem>
           </ul>
-          <hr className="border-[#2d3340] mx-3 mt-2" />
+          <hr className="border-app-border mx-3 mt-2" />
         </>
       )}
 
@@ -99,7 +99,7 @@ const SideNav = () => {
         <NavItem to="/d/depreciation" icon="bi-graph-down-arrow">Depreciation</NavItem>
       </ul>
 
-      <hr className="border-[#2d3340] mx-3 mt-2" />
+      <hr className="border-app-border mx-3 mt-2" />
 
       {/* REPORT */}
       <SectionLabel>REPORT</SectionLabel>
@@ -109,7 +109,7 @@ const SideNav = () => {
         <NavItem to="/d/trialbalance"    icon="bi-file-earmark-diff">Adj. Trial Balance</NavItem>
       </ul>
 
-      <hr className="border-[#2d3340] mx-3 mt-2" />
+      <hr className="border-app-border mx-3 mt-2" />
 
       {/* FINANCIAL STATEMENT */}
       <SectionLabel>FINANCIAL STATEMENT</SectionLabel>

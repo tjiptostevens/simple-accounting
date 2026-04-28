@@ -12,8 +12,8 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#161a1f]">
-        <div className="text-green-400 text-lg animate-pulse">Loading…</div>
+      <div className="flex items-center justify-center h-screen bg-app-bg">
+        <div className="text-primary text-lg animate-pulse">Loading…</div>
       </div>
     )
   }

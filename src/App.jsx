@@ -9,8 +9,8 @@ const Login = lazy(() => import('./components/site/login'))
 const Home  = lazy(() => import('./components/home'))
 
 const LoadingSpinner = () => (
-  <div className="flex items-center justify-center h-screen bg-[#161a1f]">
-    <span className="text-green-400 animate-pulse">Loading…</span>
+  <div className="flex items-center justify-center h-screen bg-app-bg">
+    <span className="text-primary animate-pulse">Loading…</span>
   </div>
 )
 
