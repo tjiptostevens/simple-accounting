@@ -1,70 +1,121 @@
-# Getting Started with Create React App
+# Simple Accounting
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A web-based accounting application built with React and [Supabase](https://supabase.com). It covers the full bookkeeping workflow — from chart of accounts and journal entries through to financial reports and closing entries.
+
+## Features
+
+- **Authentication** — Supabase Auth with protected routes and user profiles
+- **Master Data**
+  - Company profile
+  - Chart of Accounts (Assets, Liability, Equity, Income, Expense)
+  - Accounting Periods
+  - Customers
+  - Users
+- **Activities**
+  - General Journal entry
+  - Fixed Asset Depreciation
+- **Reports**
+  - General Journal
+  - General Ledger
+  - Trial Balance
+  - Profit & Loss
+  - Balance Sheet
+  - Cash Flow Statement
+  - Statement of Equity Changes
+  - Closing Journal
+- **Orders & Payments**
+- **Excel Import** — bulk-import journal data from `.xlsx` files
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| UI Framework | [React 18](https://react.dev) |
+| Build Tool | [Vite](https://vitejs.dev) |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com) |
+| Routing | [React Router v6](https://reactrouter.com) |
+| Data Fetching | [TanStack React Query v5](https://tanstack.com/query) |
+| Backend / Auth / DB | [Supabase](https://supabase.com) |
+| Select Component | [react-select](https://react-select.com) |
+| Excel Parsing | [xlsx](https://sheetjs.com) |
+
+## Prerequisites
+
+- Node.js 18+
+- A [Supabase](https://supabase.com) project
+
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/tjiptostevens/simple-accounting.git
+cd simple-accounting
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file in the project root:
+
+```env
+VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY=<your-anon-key>
+```
+
+You can find these values in your Supabase project under **Settings → API**.
+
+### 4. Apply the database schema
+
+Run the migrations against your Supabase project using the Supabase CLI:
+
+```bash
+supabase db push
+```
+
+Or copy and run the SQL files in `supabase/migrations/` directly from the Supabase SQL editor in this order:
+
+1. `00001_schema.sql` — tables
+2. `00002_rls.sql` — Row-Level Security policies
+3. `00003_views_functions.sql` — views and helper functions
+
+### 5. Start the development server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## Available Scripts
 
-In the project directory, you can run:
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start the Vite development server |
+| `npm run build` | Build for production (output in `dist/`) |
+| `npm run preview` | Preview the production build locally |
 
-### `npm start`
+## Project Structure
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+src/
+├── components/
+│   ├── dashboard/      # Master data pages (COA, period, company, customer, user)
+│   │   ├── activity/   # Journal and depreciation
+│   │   └── master/
+│   ├── report/         # Financial report pages
+│   ├── excel/          # Excel import
+│   ├── form/           # Shared form components
+│   ├── custom/         # Reusable UI components
+│   └── site/           # Nav, login, protected route
+├── context/            # React context (AuthContext)
+├── lib/                # Supabase client
+└── main.jsx
+supabase/
+└── migrations/         # SQL migration files
+```
