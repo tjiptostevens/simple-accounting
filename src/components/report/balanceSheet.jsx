@@ -108,7 +108,9 @@ const BalanceSheet = () => {
     income -
     expense -
     (newCoa &&
-      newCoa.filter((f) => f.number === '320').map((g) => parseFloat(g.total)))
+      newCoa
+        .filter((f) => f.number === '320')
+        .reduce((acc, curr) => acc + parseFloat(curr.total), 0))
   let assetsFill = useMemo(() => {
     return (
       newCoa &&
@@ -135,10 +137,11 @@ const BalanceSheet = () => {
             d.type === 'Equity' && d.number !== '320' && d.number !== '330',
         )
     let i = a.findIndex((obj) => obj.number === '310')
-    // console.log(a, i, pl)
-    a[i] = {
-      ...a[i],
-      credit: (parseFloat(a[i].credit) + pl).toString() + '.00',
+    if (i !== -1) {
+      a[i] = {
+        ...a[i],
+        credit: (parseFloat(a[i].credit) + pl).toString() + '.00',
+      }
     }
     return a
   }, [newCoa, pl])
@@ -430,7 +433,7 @@ const BalanceSheet = () => {
                   (newCoa &&
                     newCoa
                       .filter((f) => f.number === '320')
-                      .map((g) => parseFloat(g.total)))
+                      .reduce((acc, curr) => acc + parseFloat(curr.total), 0))
                 }
               />
             )}

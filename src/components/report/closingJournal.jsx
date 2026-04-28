@@ -8,8 +8,8 @@ const ClosingJournal = () => {
   const [data, setData] = useState({ period: '' })
   const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod })
   const { data: generalJournal, error, isError, isLoading } = useQuery({
-    queryKey: ['journallist'],
-    queryFn: reqJournalList,
+    queryKey: ['journalEntry'],
+    queryFn: reqJournalEntry,
   })
   const nestTotal = (list,key) => {
     let c = 0;

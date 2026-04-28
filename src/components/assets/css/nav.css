@@ -13,7 +13,7 @@
     flex: 1;
     max-width: 300px;
     margin: 0 var(--margin-md);
-    background-color: #242a30;
+    background-color: var(--color-app-surface);
 }
 
 .search-bar .search-icon {
@@ -25,7 +25,7 @@
 }
 
 .bi {
-    color: gray;
+    color: var(--color-muted);
 }
 
 .__icon {
@@ -36,21 +36,21 @@
 .__help {
     padding: 0px 15px;
     margin: 0px;
-    color: gray;
-    border-left: 1px solid gray;
+    color: var(--color-muted);
+    border-left: 1px solid var(--color-app-border);
 }
 
 .__avatar {
     border-radius: 100%;
     width: 30px;
     height: 30px;
-    background-color: gray;
+    background-color: var(--color-muted);
     transition: all 1s;
 }
 
 .__avatar:hover {
     border-radius: 50%;
-    background-color: rgb(49, 49, 49);
+    background-color: var(--color-primary);
     transition: all 1s;
 }
 

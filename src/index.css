@@ -10,28 +10,32 @@
 
   /* Default to dark if no class is present, though ThemeProvider handles it */
   --color-app-bg: #10105A;
-  --color-app-surface: #1a1a6a;
-  --color-app-card: #1f1f7a;
-  --color-app-border: #2a2a8a;
+  --color-app-surface: #10105A;
+  --color-app-card: #10105A;
+  --color-app-border: #4f5d75;
   --color-app-text: #e0f5ff;
-  --color-app-green: #22c55e;
-  --color-app-green-light: #86efac;
+  --color-app-green: #00a6ff;
+  --color-app-green-light: #e0f5ff;
 }
 
 .dark {
   --color-app-bg: #10105A;
-  --color-app-surface: #1a1a6a;
-  --color-app-card: #1f1f7a;
-  --color-app-border: #2a2a8a;
+  --color-app-surface: #10105A;
+  --color-app-card: #10105A;
+  --color-app-border: #4f5d75;
   --color-app-text: #e0f5ff;
+  --color-app-green: #00a6ff;
+  --color-app-green-light: #e0f5ff;
 }
 
 .light {
   --color-app-bg: #e0f5ff;
-  --color-app-surface: #f0faff;
-  --color-app-card: #ffffff;
-  --color-app-border: #d0eaff;
+  --color-app-surface: #e0f5ff;
+  --color-app-card: #e0f5ff;
+  --color-app-border: #00a6ff;
   --color-app-text: #10105A;
+  --color-app-green: #2856e1;
+  --color-app-green-light: #00a6ff;
 }
 
 @theme {

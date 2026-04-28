@@ -10,14 +10,14 @@
     flex-shrink: 0;
     width: 1.5rem;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.1);
-    border: solid rgba(0, 0, 0, 0.15);
+    background-color: var(--color-app-border);
+    border: solid var(--color-app-border);
     border-top-width: medium;
     border-right-width: medium;
     border-bottom-width: medium;
     border-left-width: medium;
     border-width: 1px 0;
-    box-shadow: inset 0 0.5em 1.5em rgba(0, 0, 0, 0.1), inset 0 0.125em 0.5em rgba(0, 0, 0, 0.15);
+    box-shadow: none;
 }
 
 .page-title {
@@ -50,7 +50,7 @@
 
 .copyright {
     text-align: center;
-    color: #ffffff;
+    color: var(--color-app-text);
     position: relative;
 }
 
@@ -70,27 +70,27 @@
     align-items: center;
     padding: 0.25rem 0.5rem;
     font-weight: 600;
-    color: rgba(0, 0, 0, 0.65);
+    color: var(--color-app-text);
     background-color: transparent;
     border: 0;
 }
 
 .btn-toggle:hover,
 .btn-toggle:focus {
-    color: rgba(0, 0, 0, 0.85);
-    background-color: #d2f4ea;
+    color: var(--color-app-text);
+    background-color: var(--color-app-surface);
 }
 
 .btn-toggle::before {
     width: 1.25em;
     line-height: 0;
-    content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+    content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234f5d75' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
     transition: transform 0.35s ease;
     transform-origin: 0.5em 50%;
 }
 
 .btn-toggle[aria-expanded="true"] {
-    color: rgba(0, 0, 0, 0.85);
+    color: var(--color-app-text);
 }
 
 .btn-toggle[aria-expanded="true"]::before {
@@ -107,7 +107,7 @@
 
 .btn-toggle-nav a:hover,
 .btn-toggle-nav a:focus {
-    background-color: #d2f4ea;
+    background-color: var(--color-app-surface);
 }
 
 .scrollarea {
@@ -159,13 +159,13 @@ html {
 
 .m__menu {
     /* text-align: center; */
-    color: #ffffff;
+    color: var(--color-app-text);
     /* bottom: 0px; */
     left: -15px;
     top: 0;
     padding: 15px 0 0 15px;
     position: fixed;
-    background-color: #343a40;
+    background-color: var(--color-app-surface);
     z-index: 1020;
     height: 94vh;
     overflow-y: auto;
@@ -173,25 +173,25 @@ html {
 
 .m__menu_toggle {
     /* text-align: center; */
-    color: #ffffff;
+    color: var(--color-app-text);
     font-size: 30px;
     position: fixed;
     padding: 5px;
     left: 0px;
     bottom: 0px;
     z-index: 100;
-    background-color: green;
+    background-color: var(--color-app-green);
     transition: all 1s;
 }
 
 .m__menu_toggle:hover {
     /* text-align: center; */
-    color: #ffffff;
+    color: var(--color-app-text);
     transition: all 1s;
 }
 
 .subm__menu {
-    background-color: #343a40 !important;
+    background-color: var(--color-app-surface) !important;
     text-align: center;
     width: 100%;
     margin: 0px;

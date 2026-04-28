@@ -1,6 +1,7 @@
 .__modal-window {
     position: fixed;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: #10105A;
+    opacity: 0.9;
     top: 0;
     right: 0;
     bottom: 0;
@@ -16,7 +17,8 @@
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 15px;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--color-app-card);
+    color: var(--color-app-text);
 }
 
 .__modal-window header {
@@ -40,7 +42,8 @@
 
 .modal-window {
     position: fixed;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: #10105A;
+    opacity: 0.9;
     top: 0;
     right: 0;
     bottom: 0;
@@ -65,7 +68,8 @@
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 15px;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--color-app-card);
+    color: var(--color-app-text);
 }
 
 .modal-window header {
@@ -86,12 +90,12 @@
 }
 
 .modal-close :hover {
-    color: black;
+    color: #10105A;
     text-decoration: none;
 }
 
 .modal-title {
-    color: gray;
+    color: var(--color-app-text);
     padding: 0 15px;
     display: flex;
     flex-direction: row;
@@ -101,7 +105,7 @@
 
 .modal-content {
     padding: 15px;
-    color: gray;
+    color: var(--color-app-text);
 }
 
 .modal-check {
