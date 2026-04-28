@@ -13,10 +13,10 @@ const BalanceSheet = () => {
   const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod })
   const { data: coa } = useQuery({ queryKey: ['coa'], queryFn: reqCoa })
   const { data: journalEntry } = useQuery({ queryKey: ['journalEntry'], queryFn: reqJournalEntry })
-  const { data: coaList, error, isError, isLoading } = useQuery(
-    'coaList',
-    reqCoaList,
-  )
+  const { data: coaList, error, isError, isLoading } = useQuery({
+    queryKey: ['coaList'],
+    queryFn: reqCoaList,
+  })
 
   // create a new COA
   let newCoa = []

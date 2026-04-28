@@ -7,10 +7,10 @@ import ReportTable from './reportTable'
 const GeneralJournal = () => {
   const [data, setData] = useState({ period: '' })
   const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod })
-  const { data: generalJournal, error, isError, isLoading } = useQuery(
-    'journallist',
-    reqJournalList,
-  )
+  const { data: generalJournal, error, isError, isLoading } = useQuery({
+    queryKey: ['journallist'],
+    queryFn: reqJournalList,
+  })
   const nestTotal = (list,key) => {
     let c = 0;
     let d = 0;

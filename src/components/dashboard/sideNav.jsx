@@ -56,10 +56,10 @@ const SideNav = () => {
   return (
     <aside className="__side_nav bg-app-surface py-3 flex flex-col gap-1 border-r border-app-border">
       {/* Logo / Brand */}
-      <div className="px-4 mb-2 flex items-center gap-2">
+      {/* <div className="px-4 mb-2 flex items-center gap-2">
         <img src={logo} alt="logo" className="w-6 h-6 rounded" />
         <span className="text-app-text font-bold text-sm">SiApp</span>
-      </div>
+      </div> */}
 
       {/* Active Period Badge */}
       {activePeriod && (
@@ -100,16 +100,6 @@ const SideNav = () => {
 
       <hr className="border-app-border mx-3 mt-2" />
 
-      {/* REPORT */}
-      <SectionLabel>REPORT</SectionLabel>
-      <ul className="list-none m-0 p-0 px-2 space-y-0.5">
-        <NavItem to="/d/generaljournal" icon="bi-file-earmark-diff">General Journal</NavItem>
-        <NavItem to="/d/closingjournal" icon="bi-file-earmark-diff">Closing Journal</NavItem>
-        <NavItem to="/d/trialbalance" icon="bi-file-earmark-diff">Adj. Trial Balance</NavItem>
-      </ul>
-
-      <hr className="border-app-border mx-3 mt-2" />
-
       {/* FINANCIAL STATEMENT */}
       <SectionLabel>FINANCIAL STATEMENT</SectionLabel>
       <ul className="list-none m-0 p-0 px-2 space-y-0.5">
@@ -117,6 +107,17 @@ const SideNav = () => {
         <NavItem to="/d/equitychange" icon="bi-file-earmark-diff">Equity Change</NavItem>
         <NavItem to="/d/balancesheet" icon="bi-file-earmark-ruled">Balance Sheet</NavItem>
         <NavItem to="/d/cashflow" icon="bi-file-earmark-medical">Cash Flow</NavItem>
+      </ul>
+
+      <hr className="border-app-border mx-3 mt-2" />
+
+      {/* FINANCIAL REPORT */}
+      <SectionLabel>FINANCIAL REPORT</SectionLabel>
+      <ul className="list-none m-0 p-0 px-2 space-y-0.5">
+        <NavItem to="/d/generaljournal" icon="bi-file-earmark-diff">General Journal</NavItem>
+        <NavItem to="/d/generalledger" icon="bi-file-earmark-diff">General Ledger</NavItem>
+        <NavItem to="/d/closingjournal" icon="bi-file-earmark-diff">Closing Journal</NavItem>
+        <NavItem to="/d/trialbalance" icon="bi-file-earmark-diff">Adj. Trial Balance</NavItem>
       </ul>
     </aside>
   )

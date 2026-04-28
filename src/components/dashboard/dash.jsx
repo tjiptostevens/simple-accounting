@@ -30,7 +30,7 @@ const Dash = () => {
         total: "0.00",
       };
       newCoa.push(x);
-    } catch (error) {}
+    } catch (error) { }
   });
   // Filter journal Entry by period
   let jE = useMemo(() => {
@@ -479,8 +479,8 @@ const Dash = () => {
                   income - expense < 0
                     ? { color: "crimson" }
                     : income - expense === 0
-                    ? { color: "var(--color-app-text)" }
-                    : { color: "limegreen" }
+                      ? { color: "var(--color-app-text)" }
+                      : { color: "limegreen" }
                 }
               >
                 Rp.{" "}

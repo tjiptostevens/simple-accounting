@@ -63,6 +63,11 @@ const Home = (props) => {
                   path="/closingjournal"
                   element={<ClosingJournal />}
                 />
+                <Route
+                  exact
+                  path="/generalledger"
+                  element={<GeneralLedger />}
+                />
                 <Route exact path="/trialbalance" element={<TrialBalance />} />
                 <Route
                   exact
