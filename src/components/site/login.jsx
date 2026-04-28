@@ -1,77 +1,85 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import '../assets/css/login.css'
-import '../assets/css/modal.css'
-import urlLink from '../config/urlLink'
-import useFetch from '../useFetch'
+import React, { useState, useEffect } from "react";
+import { useQuery } from "react-query";
+import { Link } from "react-router-dom";
+import "../assets/css/login.css";
+import "../assets/css/modal.css";
+import urlLink from "../config/urlLink";
+import { reqCompany } from "../reqFetch";
 
 const Login = (props) => {
-  const { data: company } = useFetch('getcompany.php')
+  const {
+    data: company,
+    error,
+    isError,
+    isLoading,
+  } = useQuery("company", reqCompany);
+  // const { data: company } = useFetch('getcompany.php')
+
   useEffect(() => {
-    if (localStorage.getItem('user_id')) {
-      console.log(localStorage.getItem('user_id'))
+    if (localStorage.getItem("user_id")) {
+      console.log(localStorage.getItem("user_id"));
     }
     if (company) {
-      localStorage.setItem('company', company[0].id)
-      sessionStorage.setItem('company', company[0].id)
+      localStorage.setItem("company", company[0].id);
+      sessionStorage.setItem("company", company[0].id);
     }
-  }, [company])
+  }, [company]);
 
   const [data, setData] = useState({
     data: {
-      usr: '',
-      pwd: '',
+      usr: "",
+      pwd: "",
       isRemember: false,
-      error: '',
+      error: "",
     },
     vis: false,
-    msg: '',
-    token: '',
-    res: '',
-  })
+    msg: "",
+    token: "",
+    res: "",
+  });
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     // console.log(data)
-    const abortCtr = new AbortController()
+    const abortCtr = new AbortController();
     const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': window.location.origin,
-    }
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": window.location.origin,
+    };
     setTimeout(async () => {
       try {
         let res = await fetch(`${urlLink.url}login.php`, {
           signal: abortCtr.signal,
-          method: 'POST',
+          method: "POST",
           body: JSON.stringify(data.data),
           headers: headers,
-        })
-        res = await res.json()
+        });
+        res = await res.json();
         // console.log(res)
         if (res.token) {
-          console.log('Successfully Login')
+          console.log("Successfully Login");
           let period = await fetch(`${urlLink.url}getperiod.php`, {
             signal: abortCtr.signal,
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify(data.data),
             headers: headers,
-          })
-          period = await period.json()
-          period = await period.filter((f) => f.status === '1')
-          console.log(period)
+          });
+          period = await period.json();
+          period = await period.filter((f) => f.status === "1");
+          console.log(period);
           if (data.data.isRemember === true) {
-            localStorage.setItem('user_id', res.token)
-            localStorage.setItem('loginUser', data.data.usr)
-            localStorage.setItem('period', JSON.stringify(period[0]))
-            sessionStorage.setItem('user_id', res.token)
-            sessionStorage.setItem('loginUser', data.data.usr)
-            sessionStorage.setItem('period', JSON.stringify(period[0]))
+            localStorage.setItem("user_id", res.token);
+            localStorage.setItem("loginUser", data.data.usr);
+            localStorage.setItem("period", JSON.stringify(period[0]));
+            sessionStorage.setItem("user_id", res.token);
+            sessionStorage.setItem("loginUser", data.data.usr);
+            sessionStorage.setItem("period", JSON.stringify(period[0]));
           } else {
-            localStorage.setItem('loginUser', data.data.usr)
-            localStorage.setItem('period', JSON.stringify(period[0]))
-            sessionStorage.setItem('user_id', res.token)
-            sessionStorage.setItem('loginUser', data.data.usr)
-            sessionStorage.setItem('period', JSON.stringify(period[0]))
+            localStorage.setItem("loginUser", data.data.usr);
+            localStorage.setItem("period", JSON.stringify(period[0]));
+            sessionStorage.setItem("user_id", res.token);
+            sessionStorage.setItem("loginUser", data.data.usr);
+            sessionStorage.setItem("period", JSON.stringify(period[0]));
           }
           setData({
             ...data,
@@ -79,68 +87,74 @@ const Login = (props) => {
             token: res.token,
             vis: !data.vis,
             res: res.data,
-          })
-          return res
+          });
+          return res;
         } else {
-          throw res
+          throw res;
           // setData({
           //   ...data,
           //   msg: res.message,
           // })
         }
       } catch (err) {
-        console.log(err)
+        console.log(err);
         setData({
           ...data,
-          msg: 'Error Connection',
-        })
+          msg: "Error Connection",
+        });
       }
-    }, 50)
-  }
+    }, 50);
+  };
   const handleChange = (e) => {
     // console.log(`${[e.target.name]}`, e.target.value)
     setData({
       ...data,
       data: { ...data.data, [e.target.name]: e.target.value },
-      msg: '',
-    })
+      msg: "",
+    });
+  };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (isError) {
+    return <div>Error! {error.message}</div>;
   }
   return (
     <>
       <div
         className="__modal-window"
-        style={{ display: { true: 'block', false: 'none' }[data.vis] }}
+        style={{ display: { true: "block", false: "none" }[data.vis] }}
       >
         <div
           className="row col-md-7 col-11"
           style={{
-            maxHeight: '95vh',
-            overflowY: 'auto',
-            margin: '0px',
-            padding: '15px',
-            borderRadius: '5px',
+            maxHeight: "95vh",
+            overflowY: "auto",
+            margin: "0px",
+            padding: "15px",
+            borderRadius: "5px",
           }}
         >
           <div
             className="w-100 justify-content-around"
             style={{
-              textAlign: 'center',
-              height: 'auto',
+              textAlign: "center",
+              height: "auto",
             }}
           >
-            <div style={{ fontSize: '24px' }}>{data.msg}</div>
+            <div style={{ fontSize: "24px" }}>{data.msg}</div>
             <hr />
           </div>
           <div
             className="w-100 justify-content-around"
             style={{
-              textAlign: 'center',
-              height: 'auto',
+              textAlign: "center",
+              height: "auto",
             }}
           >
             <Link
               to={{
-                pathname: '/d',
+                pathname: "/d",
                 state: { data: data },
               }}
             >
@@ -148,9 +162,9 @@ const Login = (props) => {
                 type="button"
                 className="btn btn-primary"
                 style={{
-                  textAlign: 'center',
-                  width: '60px',
-                  height: 'auto',
+                  textAlign: "center",
+                  width: "60px",
+                  height: "auto",
                 }}
               >
                 OK
@@ -163,13 +177,13 @@ const Login = (props) => {
       <div className="form-center text-center">
         {/* {JSON.stringify(data)} */}
         {company && (
-          <div className="w-100" style={{ margin: '0px', padding: '0px' }}>
+          <div className="w-100" style={{ margin: "0px", padding: "0px" }}>
             <div className="w-100">
               <b>{company[0].name}</b>
             </div>
             <hr />
             <form className="form-signin" method="post" onSubmit={handleSubmit}>
-              <div className="w-100" style={{ height: '50px' }}></div>
+              <div className="w-100" style={{ height: "50px" }}></div>
               <div className="d-none d-sm-block">
                 <img
                   className="mb-4"
@@ -228,7 +242,7 @@ const Login = (props) => {
                 Sign in
               </button>
 
-              <div className="w-100" style={{ height: '50px' }}></div>
+              <div className="w-100" style={{ height: "50px" }}></div>
               {/* <hr />
             <span>Don't have an account?</span>
             <hr /> */}
@@ -236,27 +250,27 @@ const Login = (props) => {
             <div
               className="w-100"
               style={{
-                textAlign: 'left',
-                fontSize: '12px ',
+                textAlign: "left",
+                fontSize: "12px ",
                 background:
-                  'linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.7) 100%), url(./assets/img/truck.webp) no-repeat center center / cover',
-                filter: 'grayscale(100%)',
+                  "linear-gradient(90deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.7) 100%), url(./assets/img/truck.webp) no-repeat center center / cover",
+                filter: "grayscale(100%)",
               }}
             >
               <div
                 className="col-md-4"
                 style={{
-                  margin: '0px',
-                  padding: '25px 50px',
+                  margin: "0px",
+                  padding: "25px 50px",
                 }}
               >
                 <p>{company[0].name}</p>
 
                 <b> Office : </b>
 
-                <p style={{ padding: '0 15px' }}>
-                  <small style={{ whiteSpace: 'pre-wrap' }}>
-                    {company[0].address.split('<br />').join('')}{' '}
+                <p style={{ padding: "0 15px" }}>
+                  <small style={{ whiteSpace: "pre-wrap" }}>
+                    {company[0].address.split("<br />").join("")}{" "}
                     {company[0].city}-{company[0].country}
                     <br />
                   </small>
@@ -270,9 +284,9 @@ const Login = (props) => {
               <div
                 className="w-100"
                 style={{
-                  minHeight: '70px',
+                  minHeight: "70px",
                   background:
-                    'url(./assets/img/pitaraku.png) no-repeat center center / cover',
+                    "url(./assets/img/pitaraku.png) no-repeat center center / cover",
                 }}
               >
                 {/* <img
@@ -284,7 +298,7 @@ const Login = (props) => {
             </div>
             <p
               className="text-muted"
-              style={{ margin: '0px', padding: '25px 0px' }}
+              style={{ margin: "0px", padding: "25px 0px" }}
             >
               &copy; 2021-2022
             </p>
@@ -292,7 +306,7 @@ const Login = (props) => {
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

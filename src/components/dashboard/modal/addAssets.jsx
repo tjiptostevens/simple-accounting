@@ -1,135 +1,139 @@
-import React, { useMemo, useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import useFetch from '../../useFetch'
-import useDate from '../../useDate'
-import Modal from '../../site/modal'
+import React, { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import useFetch from "../../useFetch";
+import useDate from "../../useDate";
+import Modal from "../../site/modal";
 import {
-  AddAssetsFn,
   AddJournalEntryFn,
   AddJournalFn,
   GetJournalLastFn,
-} from '../../custom/accFn'
+} from "../../custom/accFn";
+import { AddAssetsFn } from "../../custom/assetsFn";
 
 const AddAssets = (props) => {
-  const { YY, MM, DD } = useDate()
-  const navigate = useNavigate()
-  let a = JSON.parse(localStorage.getItem('period'))
-  let period = a.name
+  const { YY, MM, DD } = useDate();
+  const navigate = useNavigate();
+  let a = JSON.parse(localStorage.getItem("period"));
+  let period = a.name;
 
-  const { data: coa } = useFetch('getcoa.php')
+  const { data: coa } = useFetch("getcoa.php");
   let coaFil = useMemo(
-    () => coa?.filter((f) => f.type === 'Assets' && f.is_group === '0'),
-    [coa],
-  )
+    () => coa?.filter((f) => f.type === "Assets" && f.is_group === "0"),
+    [coa]
+  );
   const [data, setData] = useState({
     required: true,
-    code: '',
-    name: '',
-    qty: '',
-    lifetime: '',
-    date: YY + '-' + MM + '-' + DD,
-    acc: '',
-    init_value: '',
-    eco_value: '',
-    description: '',
-    company: localStorage.getItem('company'),
-    created_by: localStorage.getItem('loginUser'),
-    message: '',
-  })
-  const [vis, setVis] = useState({ modal: false })
+    code: "",
+    name: "",
+    qty: "",
+    lifetime: "",
+    date: YY + "-" + MM + "-" + DD,
+    acc: "",
+    init_value: "",
+    eco_value: "",
+    description: "",
+    posting_date: "",
+    company: localStorage.getItem("company"),
+    created_by: localStorage.getItem("loginUser"),
+    message: "",
+  });
+  const [vis, setVis] = useState({ modal: false });
   const handleChange = (e) => {
-    console.log(`${[e.target.name]}`, e.target.value)
-    let nam = e.target.name
-    if (nam === 'init_value') {
-      let eco = 0
-      eco = Math.round((data.init_value * data.qty) / (data.lifetime * 12))
+    console.log(`${[e.target.name]}`, e.target.value);
+    let nam = e.target.name;
+    if (nam === "init_value") {
+      let eco = 0;
+      eco = Math.round((data.init_value * data.qty) / (data.lifetime * 12));
       setData({
         ...data,
         [e.target.name]: e.target.value,
         eco_value: eco,
-      })
+      });
     } else {
       setData({
         ...data,
         [e.target.name]: e.target.value,
-      })
+      });
     }
-  }
+  };
   const handleClose = (e) => {
     // e.preventDefault()
-    console.log(data)
+    console.log(data);
     // setData({ ...data, required: !data.required })
     // navigate(0)
     // window.location.reload()
-    props.handleClose(e)
-  }
+    props.handleClose(e);
+  };
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    let assets = { ...data, id: +new Date() }
-    console.log(assets)
+    e.preventDefault();
+    let assets = { ...data, id: +new Date() };
+    console.log(assets);
     try {
-      let res = await AddAssetsFn(assets)
-      let last = await GetJournalLastFn('Depreciation')
+      let res = await AddAssetsFn(assets);
+      let last = await GetJournalLastFn("Depreciation");
       let journal = {
         name: `DP/${period}/${last.last}`,
-        user_remark: data.name + ' \n' + data.description,
-        title: assets.code + ' - ' + assets.name,
-        type: 'Depreciation',
-        ref: 'Assets',
+        user_remark: data.name + " \n" + data.description,
+        title: assets.code + " - " + assets.name,
+        type: "Depreciation",
+        ref: "Assets",
         ref_id: assets.id,
-        company: localStorage.getItem('company'),
-        created_by: localStorage.getItem('loginUser'),
+        posting_date: data.posting_date,
+        company: localStorage.getItem("company"),
+        created_by: localStorage.getItem("loginUser"),
         total_debit: data.eco_value,
         total_credit: data.eco_value,
-      }
+      };
       let entry = [
         {
-          idx: '1',
+          idx: "1",
           parent: journal.name,
-          acc: '502',
+          acc: "511",
           debit: data.eco_value,
-          company: localStorage.getItem('company'),
+          posting_date: data.posting_date,
+          company: localStorage.getItem("company"),
         },
         {
-          idx: '2',
+          idx: "2",
           parent: journal.name,
           acc: data.acc,
           credit: data.eco_value,
-          company: localStorage.getItem('company'),
+          posting_date: data.posting_date,
+          company: localStorage.getItem("company"),
         },
-      ]
-      let res1 = await AddJournalFn(journal)
-      await AddJournalEntryFn(entry[0])
-      await AddJournalEntryFn(entry[1])
-      setVis({ modal: true, message: res.message })
+      ];
+      let res1 = await AddJournalFn(journal);
+      await AddJournalEntryFn(entry[0]);
+      await AddJournalEntryFn(entry[1]);
+      setVis({ modal: true, message: res.message });
       setData({
         required: true,
         id: assets.id,
-        code: '',
-        name: '',
-        qty: '',
-        lifetime: '',
-        date: YY + '-' + MM + '-' + DD,
-        acc: '',
-        init_value: '',
-        eco_value: '',
-        description: '',
-        company: localStorage.getItem('company'),
-        created_by: localStorage.getItem('loginUser'),
+        code: "",
+        name: "",
+        qty: "",
+        lifetime: "",
+        date: YY + "-" + MM + "-" + DD,
+        acc: "",
+        init_value: "",
+        eco_value: "",
+        description: "",
+        company: localStorage.getItem("company"),
+        created_by: localStorage.getItem("loginUser"),
         message: res.message,
-      })
+      });
     } catch (error) {
-      setVis({ modal: false, message: error.message })
+      setVis({ modal: false, message: error.message });
       setData({
         ...data,
         id: assets.id,
         msg: error.message,
-      })
+      });
     }
-  }
+  };
   return (
     <>
-      {JSON.stringify(data)} <br />
+      {/* {JSON.stringify(data)} <br /> */}
       {/* {console.log(props)} */}
       {/* {JSON.stringify(coaFil)} */}
       <Modal
@@ -143,14 +147,19 @@ const AddAssets = (props) => {
         handleClose={() => setVis({ modal: false })}
       />
       <form onSubmit={handleSubmit} method="post">
+        <div className="w-100" style={{ height: "25px" }}></div>
+        <p>
+          <b>Assets details</b>
+        </p>
+        <hr />
         <div
           className="row col-md-12"
-          style={{ margin: '0px', padding: '0px' }}
+          style={{ margin: "0px", padding: "0px" }}
         >
           {/* Customer Code */}
           <div
             className="row col-md-4"
-            style={{ margin: '0px', padding: '0px' }}
+            style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">
               Code <span className="text-danger">*</span>
@@ -167,8 +176,8 @@ const AddAssets = (props) => {
           </div>
           {/* Customer Name */}
           <div
-            className="row col-md-8"
-            style={{ margin: '0px', padding: '0px' }}
+            className="row col-md-4"
+            style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">
               Name <span className="text-danger">*</span>
@@ -183,15 +192,33 @@ const AddAssets = (props) => {
               id="name"
             />
           </div>
+          {/* Purchase Date */}
+          <div
+            className="row col-md-4"
+            style={{ margin: "0px", padding: "0px" }}
+          >
+            <label className="label_title">
+              Purchase Date<span className="text-danger">*</span>
+            </label>
+            <input
+              required={data.required}
+              onChange={handleChange}
+              type="date"
+              className="form-control mb-2"
+              value={data.date}
+              name="date"
+              id="date"
+            />
+          </div>
         </div>
         <div
           className="row col-md-12"
-          style={{ margin: '0px', padding: '0px' }}
+          style={{ margin: "0px", padding: "0px" }}
         >
           {/* Customer Quantity */}
           <div
-            className="row col-md-4"
-            style={{ margin: '0px', padding: '0px' }}
+            className="row col-md-2"
+            style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">
               Quantity <span className="text-danger">*</span>
@@ -209,8 +236,8 @@ const AddAssets = (props) => {
           </div>
           {/* Customer lifetime */}
           <div
-            className="row col-md-4"
-            style={{ margin: '0px', padding: '0px' }}
+            className="row col-md-2"
+            style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">
               Lifetime <span className="text-danger">*</span>
@@ -226,32 +253,56 @@ const AddAssets = (props) => {
               id="lifetime"
             />
           </div>
-          {/* Customer Date */}
+          {/* Initial Value */}
           <div
             className="row col-md-4"
-            style={{ margin: '0px', padding: '0px' }}
+            style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">
-              Date <span className="text-danger">*</span>
+              Initial Value <span className="text-danger">*</span>
             </label>
             <input
               required={data.required}
+              readOnly={data.qty === "" && data.lifetime === ""}
               onChange={handleChange}
-              type="date"
+              onBlur={handleChange}
+              type="tel"
               className="form-control mb-2"
-              value={data.date}
-              name="date"
-              id="date"
+              value={data.init_value}
+              name="init_value"
+              id="init_value"
+            />
+          </div>
+          {/* Customer Date */}
+          <div
+            className="row col-md-4"
+            style={{ margin: "0px", padding: "0px" }}
+          >
+            <label className="label_title">Economic Value</label>
+            <input
+              onChange={handleChange}
+              readOnly={true}
+              type="number"
+              className="form-control mb-2"
+              value={data.eco_value}
+              name="eco_value"
+              id="eco_value"
             />
           </div>
         </div>
+
+        <div className="w-100" style={{ height: "25px" }}></div>
+        <p>
+          <b>Accounting details</b>
+        </p>
+        <hr />
         <div
           className="row col-md-12"
-          style={{ margin: '0px', padding: '0px' }}
+          style={{ margin: "0px", padding: "0px" }}
         >
           <div
-            className="row col-md-4"
-            style={{ margin: '0px', padding: '0px' }}
+            className="row col-md-6"
+            style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">
               Account <span className="text-danger">*</span>
@@ -269,52 +320,31 @@ const AddAssets = (props) => {
               {coaFil &&
                 coaFil.map((d, key) => (
                   <option key={key} value={d.number}>
-                    {d.number + ' - ' + d.name}
+                    {d.number + " - " + d.name}
                   </option>
                 ))}
             </datalist>
           </div>
-          {/* Customer Initial Value */}
           <div
-            className="row col-md-4"
-            style={{ margin: '0px', padding: '0px' }}
+            className="row col-md-6"
+            style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">
-              Initial Value <span className="text-danger">*</span>
+              Posting Date <span className="text-danger">*</span>
             </label>
             <input
-              required={data.required}
-              readOnly={data.qty === '' && data.lifetime === ''}
-              onChange={handleChange}
-              onBlur={handleChange}
-              type="tel"
+              type="date"
               className="form-control mb-2"
-              value={data.init_value}
-              name="init_value"
-              id="init_value"
-            />
-          </div>
-          {/* Customer Date */}
-          <div
-            className="row col-md-4"
-            style={{ margin: '0px', padding: '0px' }}
-          >
-            <label className="label_title">Economic Value</label>
-            <input
+              name="posting_date"
+              value={data.posting_date}
               onChange={handleChange}
-              readOnly={true}
-              type="number"
-              className="form-control mb-2"
-              value={data.eco_value}
-              name="eco_value"
-              id="eco_value"
             />
           </div>
         </div>
         {/* Customer Address */}
         <div
           className="row col-md-12 mb-5"
-          style={{ margin: '0px', padding: '0px' }}
+          style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">Description</label>
           <input
@@ -338,7 +368,7 @@ const AddAssets = (props) => {
         </button>
       </form>
     </>
-  )
-}
+  );
+};
 
-export default AddAssets
+export default AddAssets;

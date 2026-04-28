@@ -3,10 +3,17 @@ import useFetch from '../../useFetch'
 import AddAssets from '../modal/addAssets'
 import Modal from '../../site/modal'
 import { useNavigate } from 'react-router-dom'
+import { reqAssets, reqJournal } from '../../reqFetch'
+import { useQuery } from 'react-query'
 
 const Depreciation = () => {
-  const { data: assets } = useFetch('getassets.php')
-  const { data: journal } = useFetch('getjournal.php')
+  const { data: assets, error, isError, isLoading } = useQuery(
+    'assets',
+    reqAssets,
+  )
+  const { data: journal } = useQuery('journal', reqJournal)
+  // const { data: assets } = useFetch('getassets.php')
+  // const { data: journal } = useFetch('getjournal.php')
   const navigate = useNavigate()
   const [vis, setVis] = useState({ modal: false })
   const [data, setData] = useState({ vis: false })
@@ -36,15 +43,24 @@ const Depreciation = () => {
   }, [assets, data.search, data.search_type, data.end_date])
 
   const handleCalc = async () => {
-    // Check Journal for Depreciation
-    let depJournal = await journal?.filter((f) => f.type === 'Depreciation')
-    // jika depJournal RefID = assetsId dan
-    console.log(depJournal)
+    try {
+      // Check Journal for Depreciation
+      let depJournal = await journal?.filter((f) => f.type === 'Depreciation')
+      // jika depJournal RefID = assetsId dan
+      console.log(depJournal)
+    } catch (error) {
+      console.log(error)
+    }
   }
   const handleDepreciationDet = (i, code) => {
     console.log(i, code)
   }
-
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+  if (isError) {
+    return <div>Error! {error.message}</div>
+  }
   return (
     <>
       {/* Modal Window */}

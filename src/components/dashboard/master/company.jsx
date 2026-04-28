@@ -2,9 +2,15 @@ import React, { useState } from 'react'
 import useFetch from '../../useFetch'
 import urlLink from '../../config/urlLink'
 import { useNavigate } from 'react-router-dom'
+import { reqCompany } from '../../reqFetch'
+import { useQuery } from 'react-query'
 
 const Company = () => {
-  const { data: company } = useFetch('getcompany.php')
+  const { data: company, error, isError, isLoading } = useQuery(
+    'company',
+    reqCompany,
+  )
+  // const { data: company } = useFetch('getcompany.php')
   const navigate = useNavigate()
   const [file, setFile] = useState('comp ? comp.logo : "nofile.png"')
   const [data, setData] = useState({
@@ -45,6 +51,12 @@ const Company = () => {
     } catch (error) {
       console.log(error)
     }
+  }
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+  if (isError) {
+    return <div>Error! {error.message}</div>
   }
   return (
     <>

@@ -1,112 +1,21 @@
 import React, { useMemo } from "react";
-import { useQuery } from "react-query";
-import { reqCoaList, reqJournalEntry } from "../reqFetch";
+import CoaDetailFn from "../custom/coaDetailFn";
 
 const Dash = () => {
   let periodStorage = localStorage.getItem("period");
   let period = JSON.parse(periodStorage);
-  const { data: journalEntry } = useQuery("journalEntry", reqJournalEntry);
   const {
-    data: coaList,
     error,
-    isError,
     isLoading,
-  } = useQuery("coaList", reqCoaList);
-
-  // create a new COA
-  let newCoa = [];
-
-  coaList?.forEach((e) => {
-    try {
-      let x = {
-        number: e.number,
-        name: e.name,
-        type: e.type,
-        parent: e.parent,
-        is_group: e.is_group,
-        debit: "0.00",
-        credit: "0.00",
-        total: "0.00",
-      };
-      newCoa.push(x);
-    } catch (error) {}
-  });
-  // Filter journal Entry by period
-  let jE = useMemo(() => {
-    return journalEntry
-      ?.sort((a, b) => (a.posting_date > b.posting_date ? 1 : -1))
-      .filter(
-        (d) =>
-          new Date(d.posting_date) >= new Date(period.start) &&
-          new Date(d.posting_date) <= new Date(period.end)
-      );
-  }, [journalEntry, period]);
-  // new COA by filtered Journal Entry
-  jE?.forEach((e) => {
-    if (e.acc !== "Total") {
-      try {
-        let i = newCoa.findIndex((d) => d.number === e.acc);
-        let d, c;
-        // console.log(e.acc, e.debit, parseInt(e.debit))
-        d = parseInt(e.debit) + parseInt(newCoa[i].debit);
-        c = parseInt(e.credit) + parseInt(newCoa[i].credit);
-        let t = 0;
-        if (newCoa[i].type === "Assets" || newCoa[i].type === "Expense") {
-          t = d - c;
-        } else {
-          t = c - d;
-        }
-        let y = newCoa;
-        let x = {
-          number: newCoa[i].number,
-          name: newCoa[i].name,
-          type: newCoa[i].type,
-          parent: newCoa[i].parent,
-          is_group: newCoa[i].is_group,
-          debit: d.toString() + ".00",
-          credit: c.toString() + ".00",
-          total: t.toString() + ".00",
-        };
-        y[i] = x;
-        newCoa = y;
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  });
-
-  let assets = 0;
-  let liability = 0;
-  let equity = 0;
-  let income = 0;
-  let expense = 0;
-  newCoa?.forEach((element) => {
-    if (element.type === "Income") {
-      income += parseFloat(element.total);
-    }
-  });
-  newCoa?.forEach((element) => {
-    if (element.type === "Expense") {
-      expense += parseFloat(element.total);
-    }
-  });
-  newCoa?.forEach((element) => {
-    if (element.type === "Liability") {
-      liability += parseFloat(element.total);
-    } else if (element.type === "Equity") {
-      equity += parseFloat(element.total);
-    }
-  });
-  newCoa?.forEach((element) => {
-    if (element.type === "Assets") {
-      assets += parseFloat(element.total);
-    }
-  });
-  let pl =
-    income -
-    expense -
-    (newCoa &&
-      newCoa.filter((f) => f.number === "320").map((g) => parseFloat(g.total)));
+    isError,
+    newCoa,
+    assets,
+    liability,
+    equity,
+    pl,
+    income,
+    expense,
+  } = CoaDetailFn(period);
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -264,7 +173,6 @@ const Dash = () => {
           </div>
         </div>
       </div>
-
       {/* Balance */}
       <div
         className="row"
@@ -378,7 +286,6 @@ const Dash = () => {
           </div>
         </div>
       </div>
-
       {/* Profit and Loss */}
       <div
         className="row"
@@ -495,7 +402,6 @@ const Dash = () => {
           </div>
         </div>
       </div>
-
       {/* coa  */}
       {/* <div className="w-100">
         <div className="col-md-6">{JSON.stringify(newCoa)}</div>

@@ -1,12 +1,27 @@
 import React, { useState, useMemo } from 'react'
 import AddCustomer from '../modal/addCustomer'
 import useFetch from '../../useFetch'
+import { useQuery } from 'react-query'
+import { reqCustomer } from '../../reqFetch'
+import Modal from '../../site/modal'
+import EditCustomer from '../modal/editCustomer'
+import { EditCustomerFn } from '../../custom/customerFn'
 
 const Customer = () => {
-  const { data: customer } = useFetch('getcustomer.php')
+  const { data: customer, error, isError, isLoading } = useQuery(
+    'customer',
+    reqCustomer,
+  )
+
+  const [vis, setVis] = useState({ modal: false })
+  // const { data: customer } = useFetch('getcustomer.php')
   const [data, setData] = useState({ vis: false })
+  const refreshPage = () => {
+    window.location.reload(false)
+  }
   const handleClose = (e) => {
-    setData({ ...data, vis: false })
+    setVis({ ...vis, modal: false })
+    refreshPage()
   }
   const handleChange = (e) => {
     console.log(`${[e.target.name]}`, e.target.value)
@@ -15,11 +30,31 @@ const Customer = () => {
       [e.target.name]: e.target.value,
     })
   }
-  const handleEdit = (e) => {
-    setData({ ...data, vis: true, value: 2 })
+  const handleEdit = (e, input) => {
+    console.log(e, input)
+    e.preventDefault()
+    setVis({ ...vis, modal: true, value: 2, data: input })
   }
-  const handleDelete = (e) => {
-    setData({ ...data, vis: true, value: 3 })
+  const handleDelete = async (e, input, status) => {
+    e.preventDefault()
+    let x = {
+      ...input,
+      status: status,
+    }
+    try {
+      let res = await EditCustomerFn(x)
+      console.log(res)
+      if (res.error) {
+        throw res
+      } else {
+        setVis({ ...vis, modal: true, value: 3, msg: res.message })
+      }
+    } catch (error) {
+      console.log(error)
+      setVis({ ...vis, modal: true, value: 3, msg: error.message })
+    }
+
+    // setVis({ ...vis, modal: true, value: 2, data: x })
   }
   let customerFil = useMemo(() => {
     const searchRegex = data.search && new RegExp(`${data.search}`, 'gi')
@@ -34,56 +69,31 @@ const Customer = () => {
         )
     )
   }, [customer, data.search])
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+  if (isError) {
+    return <div>Error! {error.message}</div>
+  }
   return (
     <>
       {/* Modal Window */}
-      <div
-        className="__modal-window"
-        style={{
-          display: { true: 'block', false: 'none' }[data.vis],
-          margin: '0px',
-          padding: '0px',
-        }}
-      >
-        <div
-          className="row col-md-6 col-11"
-          style={{
-            maxHeight: '95vh',
-            overflowY: 'auto',
-            margin: '0px',
-            padding: '0px',
-          }}
-        >
-          <div
-            className="modal-close"
-            onClick={() => setData({ ...data, vis: !data.vis })}
-          >
-            <i
-              className="bi bi-x-lg"
-              style={{
-                textAlign: 'center',
-                width: '60px',
-                height: 'auto',
-              }}
-            ></i>
-          </div>
-          <div
-            className="w-100 justify-content-around"
-            style={{
-              textAlign: 'justify',
-              height: 'auto',
-            }}
-          >
-            {
-              {
-                1: <AddCustomer handleClose={handleClose} />,
-                2: '',
-              }[data.value]
-            }
-          </div>
-        </div>
-      </div>
-
+      <Modal
+        modal={vis.modal}
+        title={
+          { 1: 'Add Customer', 2: 'Edit Customer', 3: 'Delete Customer' }[
+            vis.value
+          ]
+        }
+        element={
+          {
+            1: <AddCustomer handleClose={handleClose} />,
+            2: <EditCustomer handleClose={handleClose} data={vis.data} />,
+            3: <>{vis.msg}</>,
+          }[vis.value]
+        }
+        handleClose={handleClose}
+      />
       {/* Component Title */}
       <div
         className="w-100"
@@ -103,7 +113,7 @@ const Customer = () => {
           </span>
           <button
             className="btn btn-primary m-1"
-            onClick={() => setData({ ...data, vis: !data.vis, value: 1 })}
+            onClick={() => setVis({ ...vis, modal: !vis.modal, value: 1 })}
           >
             <i className="bi bi-plus"></i>
             New
@@ -176,18 +186,27 @@ const Customer = () => {
                 <button
                   className="btn btn-sm btn-warning"
                   style={{ padding: '2px 7px', fontSize: '10px' }}
-                  onClick={handleEdit}
+                  onClick={(e) => handleEdit(e, d)}
                 >
                   Edit
                 </button>
-
-                <button
-                  className="btn btn-sm btn-danger"
-                  style={{ padding: '2px 7px', fontSize: '10px' }}
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
+                {d.status === '1' ? (
+                  <button
+                    className="btn btn-sm btn-danger"
+                    style={{ padding: '2px 7px', fontSize: '10px' }}
+                    onClick={(e) => handleDelete(e, d, 0)}
+                  >
+                    Delete
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-sm btn-light"
+                    style={{ padding: '2px 7px', fontSize: '10px' }}
+                    onClick={(e) => handleDelete(e, d, 1)}
+                  >
+                    Activate
+                  </button>
+                )}
               </div>
               <hr />
             </div>

@@ -1,12 +1,9 @@
 import React, { useState } from 'react'
-import useFetch from '../../useFetch'
-import urlLink from '../../config/urlLink'
-import { AddCustomerFn } from '../../custom/customerFn'
+import { EditCustomerFn } from '../../custom/customerFn'
 import Modal from '../../site/modal'
 
-const AddCustomer = (props) => {
-  const [data, setData] = useState({ required: true })
-
+const EditCustomer = (props) => {
+  const [data, setData] = useState({ required: true, ...props.data })
   const [vis, setVis] = useState({ modal: false })
   const handleChange = (e) => {
     console.log(`${[e.target.name]}`, e.target.value)
@@ -17,6 +14,7 @@ const AddCustomer = (props) => {
   }
   const handleClose = (e) => {
     console.log(data)
+    e.preventDefault()
     setVis({ ...vis, modal: false })
     setData({ required: true, name: '', mobile: '', email: '', address: '' })
   }
@@ -24,7 +22,7 @@ const AddCustomer = (props) => {
     e.preventDefault()
     console.log(data)
     try {
-      let res = await AddCustomerFn(data)
+      let res = await EditCustomerFn(data)
       console.log(res)
       setVis({ ...vis, modal: true, msg: res.message })
     } catch (error) {
@@ -72,7 +70,7 @@ const AddCustomer = (props) => {
       <Modal
         modal={vis.modal}
         element={<>{vis.msg}</>}
-        handleClose={handleClose}
+        handleClose={(e) => setVis({ modal: false })}
       />
       <form onSubmit={handleSubmit} method="post">
         {/* Customer Name */}
@@ -104,10 +102,9 @@ const AddCustomer = (props) => {
           <input
             required={data.required}
             onChange={handleChange}
-            type="number"
+            type="tel"
             className="form-control mb-2"
             value={data.mobile}
-            placeholder="628123456789"
             name="mobile"
             id="mobile"
           />
@@ -166,4 +163,4 @@ const AddCustomer = (props) => {
   )
 }
 
-export default AddCustomer
+export default EditCustomer

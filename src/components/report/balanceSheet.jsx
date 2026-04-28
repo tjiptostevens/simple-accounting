@@ -1,16 +1,97 @@
 import React, { useState, useMemo } from 'react'
+import { useQuery } from 'react-query'
+import CoaLists from '../dashboard/master/coaLists'
+import { reqCoa, reqCoaList, reqJournalEntry, reqPeriod } from '../reqFetch'
 import useFetch from '../useFetch'
 import ReportList from './reportList'
 import ReportTable from './reportTable'
 
 const BalanceSheet = () => {
-  const { data: coa } = useFetch('getcoav2.php')
+  const [data, setData] = useState({ period: '' })
+  const [vis, setVis] = useState({ modal: false })
+  let periodStorage = localStorage.getItem('period')
+  // let period = JSON.parse(periodStorage);
+  // const { data: coaList } = useFetch('getcoalist.php')
+
+  const { data: period } = useQuery('period', reqPeriod)
+  const { data: coa } = useQuery('coa', reqCoa)
+  const { data: journalEntry } = useQuery('journalEntry', reqJournalEntry)
+  const { data: coaList, error, isError, isLoading } = useQuery(
+    'coaList',
+    reqCoaList,
+  )
+
+  // create a new COA
+  let newCoa = []
+  coaList?.forEach((e) => {
+    try {
+      let x = {
+        number: e.number,
+        name: e.name,
+        type: e.type,
+        parent: e.parent,
+        is_group: e.is_group,
+        debit: '0.00',
+        credit: '0.00',
+        total: '0.00',
+      }
+      newCoa.push(x)
+    } catch (error) {}
+  })
+  // Filter journal Entry by period
+  let jE = useMemo(() => {
+    return data.period === ''
+      ? journalEntry?.sort((a, b) => (a.created_date > b.created_date ? 1 : -1))
+      : journalEntry
+          ?.sort((a, b) => (a.created_date > b.created_date ? 1 : -1))
+          .filter(
+            (d) =>
+              new Date(d.created_date) >=
+                new Date(period[parseInt(data.period)].start) &&
+              new Date(d.created_date) <=
+                new Date(period[parseInt(data.period)].end),
+          )
+  }, [journalEntry, period, data.period])
+  // new COA by filtered Journal Entry
+  jE?.forEach((e) => {
+    if (e.acc !== 'Total') {
+      try {
+        let i = newCoa.findIndex((d) => d.number === e.acc)
+        let d, c
+        // console.log(e.acc, e.debit, parseInt(e.debit))
+        d = parseFloat(e.debit) + parseFloat(newCoa[i].debit)
+        c = parseFloat(e.credit) + parseFloat(newCoa[i].credit)
+        let t = 0
+        if (newCoa[i].type === 'Assets' || newCoa[i].type === 'Expense') {
+          t = d - c
+        } else {
+          t = c - d
+        }
+        let y = newCoa
+        let x = {
+          number: newCoa[i].number,
+          name: newCoa[i].name,
+          type: newCoa[i].type,
+          parent: newCoa[i].parent,
+          is_group: newCoa[i].is_group,
+          debit: d.toString() + '.00',
+          credit: c.toString() + '.00',
+          total: t.toString() + '.00',
+        }
+        y[i] = x
+        newCoa = y
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  })
   let assets = 0
   let liability = 0
   let equity = 0
   let income = 0
   let expense = 0
-  coa?.forEach((element) => {
+
+  newCoa?.forEach((element) => {
     if (element.type === 'Liability') {
       liability += parseFloat(element.total)
     } else if (element.type === 'Equity') {
@@ -19,38 +100,67 @@ const BalanceSheet = () => {
       income += parseFloat(element.total)
     }
   })
-  coa?.forEach((element) => {
+  newCoa?.forEach((element) => {
     if (element.type === 'Assets') {
       assets += parseFloat(element.total)
     } else if (element.type === 'Expense') {
       expense += parseFloat(element.total)
     }
   })
-
+  let pl =
+    income -
+    expense -
+    (newCoa &&
+      newCoa.filter((f) => f.number === '320').map((g) => parseFloat(g.total)))
   let assetsFill = useMemo(() => {
     return (
-      coa &&
-      coa
+      newCoa &&
+      newCoa
         // .sort((a, b) => (a.name > b.name ? 1 : -1))
         .filter((d) => d.type === 'Assets')
     )
-  }, [coa])
+  }, [newCoa])
   let liabilityFill = useMemo(() => {
     return (
-      coa &&
-      coa
+      newCoa &&
+      newCoa
         // .sort((a, b) => (a.name > b.name ? 1 : -1))
         .filter((d) => d.type === 'Liability')
     )
-  }, [coa])
+  }, [newCoa])
   let equityFill = useMemo(() => {
-    return (
-      coa &&
-      coa
+    let a =
+      newCoa &&
+      newCoa
         // .sort((a, b) => (a.name > b.name ? 1 : -1))
-        .filter((d) => d.type === 'Equity')
-    )
-  }, [coa])
+        .filter(
+          (d) =>
+            d.type === 'Equity' && d.number !== '320' && d.number !== '330',
+        )
+    let i = a.findIndex((obj) => obj.number === '310')
+    // console.log(a, i, pl)
+    a[i] = {
+      ...a[i],
+      credit: (parseFloat(a[i].credit) + pl).toString() + '.00',
+    }
+    return a
+  }, [newCoa, pl])
+  const handleClose = (e) => {
+    setData({ ...data, vis: false })
+  }
+  const handleChange = (e) => {
+    console.log(`${[e.target.name]}`, e.target.value)
+    setData({
+      ...data,
+      [e.target.name]: e.target.value,
+    })
+  }
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+  if (isError) {
+    return <div>Error! {error.message}</div>
+  }
   return (
     <>
       {/* Component Title */}
@@ -73,6 +183,18 @@ const BalanceSheet = () => {
             onChange={handleChange}
           />
         </div> */}
+          <select
+            className="form-control m-1"
+            name="period"
+            onChange={handleChange}
+            id="period"
+            style={{ minWidth: '100px' }}
+          >
+            <option value="">Period</option>
+            {period?.map((d, i) => (
+              <option value={i}>{d.name}</option>
+            ))}
+          </select>
           <button
             className="btn btn-primary m-1"
             onClick={() => window.print()}
@@ -195,88 +317,184 @@ const BalanceSheet = () => {
                 style={equity < 0 ? { color: 'crimson' } : { color: 'white' }}
               >
                 Rp.{' '}
-                {equity.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') +
-                  '.00'}
+                {(equity + pl)
+                  .toString()
+                  .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + '.00'}
               </h5>
             </div>
           </div>
         </div>
       </div>
-      <div className="row col-md-12" style={{ paddingLeft: '25px' }}>
-        <div
-          className="row col-md-12"
-          style={{
-            color: 'white',
-            textAlign: 'left',
-            padding: '7px 0',
-            fontWeight: '600',
-          }}
-        >
-          {assetsFill && (
+      <div className="w-100" style={{ overflowY: 'auto' }}>
+        <div className="row col-md-12" style={{ paddingLeft: '25px' }}>
+          <div
+            className="row col-md-12"
+            style={{
+              color: 'white',
+              textAlign: 'left',
+              padding: '7px 0',
+              fontWeight: '600',
+            }}
+          >
+            {assetsFill && <CoaLists list={assetsFill} />}
+            {console.log(assetsFill)}
+            {/* {assetsFill && (
             <ReportList
               title={[
-                [1, 1, 'number'],
-                [3, 3, 'name'],
-                [2, 3, 'total'],
+                [1, 1, "number"],
+                [3, 3, "name"],
+                [2, 3, "total"],
               ]}
               body={assetsFill}
             />
-          )}
-          <hr />
-          Total Assets = {assets}
-          <hr />
-        </div>
-        <div className="w-100" style={{ height: '25px' }}></div>
-        <div
-          className="row col-md-12"
-          style={{
-            color: 'white',
-            textAlign: 'left',
-            padding: '7px 0',
-            fontWeight: '600',
-          }}
-        >
-          {liabilityFill && (
+          )} */}
+            <hr />
+            <div
+              className="w-100"
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'right',
+              }}
+            >
+              <div style={{ width: '45%' }}></div>
+              <div style={{ width: '25%' }}>Total Assets</div>
+              <div style={{ width: '20%' }}>
+                {assets.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') +
+                  '.00'}{' '}
+                Rp
+              </div>
+              <div style={{ width: '10%' }}></div>
+            </div>
+            <hr />
+          </div>
+          <div className="w-100" style={{ height: '25px' }}></div>
+          <div
+            className="row col-md-12"
+            style={{
+              color: 'white',
+              textAlign: 'left',
+              padding: '7px 0',
+              fontWeight: '600',
+            }}
+          >
+            {liabilityFill && <CoaLists list={liabilityFill} />}
+            {/* {liabilityFill && (
             <ReportList
               title={[
-                [1, 1, 'number'],
-                [3, 3, 'name'],
-                [2, 3, 'total'],
+                [1, 1, "number"],
+                [3, 3, "name"],
+                [2, 3, "total"],
               ]}
               body={liabilityFill}
             />
-          )}
-          <hr />
-          Total Liability = {liability}
-          <hr />
-        </div>
-        <div className="w-100" style={{ height: '25px' }}></div>
-        <div
-          className="row col-md-12"
-          style={{
-            color: 'white',
-            textAlign: 'left',
-            padding: '7px 0',
-            fontWeight: '600',
-          }}
-        >
-          {equityFill && (
+          )} */}
+            <hr />
+            <div
+              className="w-100"
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'right',
+              }}
+            >
+              <div style={{ width: '45%' }}></div>
+              <div style={{ width: '25%' }}>Total Liability</div>
+              <div style={{ width: '20%' }}>
+                {liability
+                  .toString()
+                  .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + '.00'}{' '}
+                Rp
+              </div>
+              <div style={{ width: '10%' }}></div>
+            </div>
+            <hr />
+          </div>
+          <div className="w-100" style={{ height: '25px' }}></div>
+          <div
+            className="row col-md-12"
+            style={{
+              color: 'white',
+              textAlign: 'left',
+              padding: '7px 0',
+              fontWeight: '600',
+            }}
+          >
+            {equityFill && (
+              <CoaLists
+                list={equityFill}
+                equiChange={
+                  equity +
+                  (income - expense) -
+                  (newCoa &&
+                    newCoa
+                      .filter((f) => f.number === '320')
+                      .map((g) => parseFloat(g.total)))
+                }
+              />
+            )}
+            {/* {equityFill && (
             <ReportList
               title={[
-                [1, 1, 'number'],
-                [3, 3, 'name'],
-                [2, 3, 'total'],
+                [1, 1, "number"],
+                [3, 3, "name"],
+                [2, 3, "total"],
               ]}
               body={equityFill}
             />
-          )}
-          <hr />
-          Total Equity = {equity}
-          <hr />
+          )} */}
+            <hr />
+            <div
+              className="w-100"
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'right',
+              }}
+            >
+              <div style={{ width: '45%' }}></div>
+              <div style={{ width: '25%' }}>Total Equity</div>
+              <div style={{ width: '20%' }}>
+                {(equity + pl)
+                  .toString()
+                  .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + '.00'}{' '}
+                Rp
+              </div>
+              <div style={{ width: '10%' }}></div>
+            </div>
+            <hr />
+            <div
+              className="w-100"
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'right',
+              }}
+            >
+              <div style={{ width: '45%' }}></div>
+              <div style={{ width: '25%' }}>Total Liability + Equity</div>
+              <div style={{ width: '20%' }}>
+                {(liability + (equity + pl))
+                  .toString()
+                  .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + '.00'}{' '}
+                Rp
+              </div>
+              <div style={{ width: '10%' }}></div>
+            </div>
+            <hr />
+          </div>
+          <div className="w-100" style={{ height: '25px' }}></div>
+
+          <div className="w-100" style={{ height: '100px' }}></div>
         </div>
-        <div className="w-100" style={{ height: '25px' }}></div>
-        <hr />
-        TOTAL LIABILITY + EQUITY = {liability + equity}
       </div>
     </>
   )

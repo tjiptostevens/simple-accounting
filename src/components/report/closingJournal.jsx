@@ -5,7 +5,7 @@ import { reqJournalEntry, reqJournalList, reqPeriod } from '../reqFetch'
 // import useFetch from '../useFetch'
 import ReportTable from './reportTable'
 
-const GeneralJournal = () => {
+const ClosingJournal = () => {
   const [data, setData] = useState({ period: '' })
   const { data: period } = useQuery('period', reqPeriod)
   const { data: generalJournal, error, isError, isLoading } = useQuery(
@@ -64,8 +64,10 @@ const GeneralJournal = () => {
     try {
       let i = newJournal.findIndex((d) => d.parent === e.parent)
       if (i < 0) {
-        let x = { parent: e.parent, posting_date: e.posting_date, 
-          type: e.type, child: [e] }
+        let x = { parent: e.parent, 
+          posting_date: e.posting_date, 
+          type: e.type, 
+          child: [e] }
         newJournal.push(x)
       } else {
         let x = {
@@ -96,7 +98,7 @@ const GeneralJournal = () => {
         className="w-100"
         style={{ display: 'flex', justifyContent: 'space-between' }}
       >
-        <div className=" __content_title">General Journal</div>
+        <div className=" __content_title">Closing Journal</div>
         {/* add User + search */}
         <div className=" __search_bar">
           <div
@@ -185,7 +187,7 @@ const GeneralJournal = () => {
       <hr style={{ margin: '0' }} />
       <div className="w-100" style={{ height: '25px' }}></div>
       {/* {newJournal.length} */}
-      {console.log(newJournal)}
+      {/* {console.log(newJournal)} */}
       {/* title */}
       <div
         className="row col-md-12"
@@ -233,7 +235,7 @@ const GeneralJournal = () => {
       <hr style={{ margin: '0' }} />
       <div className="w-100" style={{ overflowY: 'auto' }}>
         {newJournal
-          .filter((f) => f.type !== 'Closing' && f.parent !== '')
+          .filter((f) => f.type === 'Closing' && f.parent !== '' )
           .map((d) => (
             <>
               <div className="row col-md-12" style={{ paddingLeft: '25px' }}>
@@ -332,6 +334,7 @@ const GeneralJournal = () => {
                     >
                       {nestTotal(d.child,'c').toString()
                         .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + '.00'}
+                      
                     </div>
                     <div className="w-100" style={{ height: '7px' }}></div>
                   </div>
@@ -344,4 +347,4 @@ const GeneralJournal = () => {
   )
 }
 
-export default GeneralJournal
+export default ClosingJournal
