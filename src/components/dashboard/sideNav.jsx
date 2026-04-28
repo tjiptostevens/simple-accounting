@@ -10,10 +10,9 @@ const NavItem = ({ to, icon, children }) => (
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors no-underline ${
-          isActive
-            ? 'bg-primary text-white font-semibold'
-            : 'text-app-text opacity-70 hover:opacity-100 hover:bg-app-bg'
+        `flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors no-underline ${isActive
+          ? 'bg-primary text-white font-semibold'
+          : 'text-app-text opacity-70 hover:opacity-100 hover:bg-app-bg'
         }`
       }
     >
@@ -59,7 +58,7 @@ const SideNav = () => {
       {/* Logo / Brand */}
       <div className="px-4 mb-2 flex items-center gap-2">
         <img src={logo} alt="logo" className="w-6 h-6 rounded" />
-        <span className="text-app-text font-bold text-sm">PITARA</span>
+        <span className="text-app-text font-bold text-sm">SiApp</span>
       </div>
 
       {/* Active Period Badge */}
@@ -82,11 +81,11 @@ const SideNav = () => {
         <>
           <SectionLabel>MASTER</SectionLabel>
           <ul className="list-none m-0 p-0 px-2 space-y-0.5">
-            <NavItem to="/d/company"       icon="bi-building">Company</NavItem>
+            <NavItem to="/d/company" icon="bi-building">Company</NavItem>
             <NavItem to="/d/chartofaccount" icon="bi-bar-chart-steps">Chart of Account</NavItem>
-            <NavItem to="/d/period"         icon="bi-calendar3">Period</NavItem>
-            <NavItem to="/d/user"           icon="bi-person-square">User</NavItem>
-            <NavItem to="/d/customer"       icon="bi-people">Customer</NavItem>
+            <NavItem to="/d/period" icon="bi-calendar3">Period</NavItem>
+            <NavItem to="/d/user" icon="bi-person-square">User</NavItem>
+            <NavItem to="/d/customer" icon="bi-people">Customer</NavItem>
           </ul>
           <hr className="border-app-border mx-3 mt-2" />
         </>
@@ -95,7 +94,7 @@ const SideNav = () => {
       {/* ACTIVITY */}
       <SectionLabel>ACTIVITY</SectionLabel>
       <ul className="list-none m-0 p-0 px-2 space-y-0.5">
-        <NavItem to="/d/journal"     icon="bi-file-earmark-break">Journal</NavItem>
+        <NavItem to="/d/journal" icon="bi-file-earmark-break">Journal</NavItem>
         <NavItem to="/d/depreciation" icon="bi-graph-down-arrow">Depreciation</NavItem>
       </ul>
 
@@ -104,9 +103,9 @@ const SideNav = () => {
       {/* REPORT */}
       <SectionLabel>REPORT</SectionLabel>
       <ul className="list-none m-0 p-0 px-2 space-y-0.5">
-        <NavItem to="/d/generaljournal"  icon="bi-file-earmark-diff">General Journal</NavItem>
-        <NavItem to="/d/closingjournal"  icon="bi-file-earmark-diff">Closing Journal</NavItem>
-        <NavItem to="/d/trialbalance"    icon="bi-file-earmark-diff">Adj. Trial Balance</NavItem>
+        <NavItem to="/d/generaljournal" icon="bi-file-earmark-diff">General Journal</NavItem>
+        <NavItem to="/d/closingjournal" icon="bi-file-earmark-diff">Closing Journal</NavItem>
+        <NavItem to="/d/trialbalance" icon="bi-file-earmark-diff">Adj. Trial Balance</NavItem>
       </ul>
 
       <hr className="border-app-border mx-3 mt-2" />
@@ -114,10 +113,10 @@ const SideNav = () => {
       {/* FINANCIAL STATEMENT */}
       <SectionLabel>FINANCIAL STATEMENT</SectionLabel>
       <ul className="list-none m-0 p-0 px-2 space-y-0.5">
-        <NavItem to="/d/profitandloss"  icon="bi-file-earmark-bar-graph">Profit &amp; Loss</NavItem>
-        <NavItem to="/d/equitychange"   icon="bi-file-earmark-diff">Equity Change</NavItem>
-        <NavItem to="/d/balancesheet"   icon="bi-file-earmark-ruled">Balance Sheet</NavItem>
-        <NavItem to="/d/cashflow"       icon="bi-file-earmark-medical">Cash Flow</NavItem>
+        <NavItem to="/d/profitandloss" icon="bi-file-earmark-bar-graph">Profit &amp; Loss</NavItem>
+        <NavItem to="/d/equitychange" icon="bi-file-earmark-diff">Equity Change</NavItem>
+        <NavItem to="/d/balancesheet" icon="bi-file-earmark-ruled">Balance Sheet</NavItem>
+        <NavItem to="/d/cashflow" icon="bi-file-earmark-medical">Cash Flow</NavItem>
       </ul>
     </aside>
   )

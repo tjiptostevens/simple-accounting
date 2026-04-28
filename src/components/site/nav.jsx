@@ -22,7 +22,7 @@ const Nav = () => {
       <div className="max-w-full px-4">
         <nav className="flex items-center justify-between h-12">
           {/* Brand */}
-          <Link to="/d" className="flex items-center gap-2 no-underline">
+          {/* <Link to="/d" className="flex items-center gap-2 no-underline">
             <img
               src={logo}
               width="24"
@@ -31,9 +31,9 @@ const Nav = () => {
               className="rounded"
             />
             {width > 450 && (
-              <span className="text-app-text font-bold text-sm">PITARA</span>
+              <span className="text-app-text font-bold text-sm">SiApp</span>
             )}
-          </Link>
+          </Link> */}
 
           {/* Right side */}
           <div className="flex items-center gap-4">
