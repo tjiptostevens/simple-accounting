@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from 'react'
-import useFetch from '../useFetch'
 
 const GeneralLedger = () => {
-  const { data: journal } = useFetch('getjournal.php')
+  const [journal] = useState([])
   const [data, setData] = useState({ vis: false })
   //   const elementRef = useRef(null);
   const handleClose = (e) => {
@@ -40,7 +39,7 @@ const GeneralLedger = () => {
         }}
       >
         <div
-          className="row col-md-6 col-11"
+          className="flex flex-wrap md:w-1/2 w-11/12"
           style={{
             maxHeight: '95vh',
             overflowY: 'auto',
@@ -62,7 +61,7 @@ const GeneralLedger = () => {
             ></i>
           </div>
           <div
-            className="w-100 justify-content-around"
+            className="w-full"
             style={{
               textAlign: 'justify',
               height: 'auto',
@@ -72,7 +71,7 @@ const GeneralLedger = () => {
       </div>
 
       {/* User Content */}
-      <div className="w-100">
+      <div className="w-full">
         <p className="__content_title">General Ledger</p>
         <hr />
       </div>

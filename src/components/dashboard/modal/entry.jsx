@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import useFetch from "../../useFetch";
-import "../../assets/css/form.css";
 import { reqCoa } from "../../reqFetch";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 const Entry = (props) => {
-  const { data: coa, error, isError, isLoading } = useQuery("coa", reqCoa);
+  const { data: coa, error, isError, isLoading } = useQuery({ queryKey: ['coa'], queryFn: reqCoa });
   const [data, setData] = useState({ delete: false });
   const dataList = {
     idx: (props.i + 1).toString(),
@@ -50,14 +48,14 @@ const Entry = (props) => {
       {props.data.idx && (
         <div
           key={props.i}
-          className="row col-md-12 "
+          className="flex flex-wrap w-full "
           style={{
             margin: "0px",
             padding: "0px",
           }}
         >
           <div
-            className="col-md-1"
+            className="md:w-1/12"
             style={{ padding: "5px 10px", border: "none" }}
             onClick={handleDelete}
             onMouseOver={() => setData({ delete: true })}
@@ -71,7 +69,7 @@ const Entry = (props) => {
           </div>
           <input
             list="coa"
-            className="col-md-1"
+            className="md:w-1/12"
             style={{ padding: "5px 10px", border: "none" }}
             type="text"
             name="acc"
@@ -91,7 +89,7 @@ const Entry = (props) => {
                 ))}
           </datalist>
           <input
-            className="col-md-2"
+            className="md:w-2/12"
             style={{ padding: "5px 10px", border: "none" }}
             type="text"
             value={
@@ -103,7 +101,7 @@ const Entry = (props) => {
           />
           <input
             type="text"
-            className="col-md-2"
+            className="md:w-2/12"
             style={{ padding: "5px 10px", border: "none" }}
             name="party_type"
             id={props.i}
@@ -113,7 +111,7 @@ const Entry = (props) => {
           />
           <input
             type="text"
-            className="col-md-2"
+            className="md:w-2/12"
             style={{ padding: "5px 10px", border: "none" }}
             name="party"
             id={props.i}
@@ -123,7 +121,7 @@ const Entry = (props) => {
           />
           <input
             type="number"
-            className="col-md-2 inp-number"
+            className="md:w-2/12"
             style={{ padding: "5px 10px", border: "none" }}
             name="debit"
             id={props.i}
@@ -134,7 +132,7 @@ const Entry = (props) => {
           />
           <input
             type="number"
-            className="col-md-2 inp-number"
+            className="md:w-2/12"
             style={{ padding: "5px 10px", border: "none" }}
             name="credit"
             id={props.i}

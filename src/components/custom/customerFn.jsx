@@ -1,95 +1,57 @@
-import urlLink from "../config/urlLink";
+/**
+ * customerFn.js  –  Customer CRUD via Supabase
+ */
+import { supabase } from '../../lib/supabase'
 
-const abortCtr = new AbortController();
-const headers = {
-  Accept: "application/json",
-  "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": window.location.origin,
-};
-const loginUser = localStorage.getItem("loginUser");
-const company = localStorage.getItem("company");
+const throwOnError = ({ data, error }) => {
+  if (error) throw new Error(error.message)
+  return data
+}
 
-const AddCustomerFn = async (
-  input = {
-    name: "",
-    mobile: "",
-    email: "",
-    address: "",
-    created_by: loginUser,
-    company: company,
-  }
-) => {
-  console.log(input);
-  let x = { ...input, created_by: loginUser, company: company };
-  console.log(x);
-  try {
-    let res = await fetch(`${urlLink.url}addcustomer.php`, {
-      signal: abortCtr.signal,
-      method: "POST",
-      body: JSON.stringify(x),
-      headers: headers,
-    });
-    console.log(res);
-    res = await res.json();
-    if (res.error) {
-      throw res;
-    } else {
-      return res;
-    }
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
+const getContext = async () => {
+  const { data: sessionData } = await supabase.auth.getSession()
+  const userId = sessionData?.session?.user?.id
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('company_id')
+    .eq('id', userId)
+    .single()
+  return { userId, companyId: profile?.company_id }
+}
 
-const EditCustomerFn = async (
-  input = {
-    id: "",
-    name: "",
-    mobile: "",
-    email: "",
-    address: "",
-    modified_by: loginUser,
+const AddCustomerFn = async (input) => {
+  const { userId, companyId } = await getContext()
+  const row = {
+    name:       input.name,
+    mobile:     input.mobile ?? '',
+    email:      input.email ?? '',
+    address:    input.address ?? '',
+    status:     1,
+    company_id: companyId,
+    created_by: userId,
   }
-) => {
-  try {
-    let res = await fetch(`${urlLink.url}editcustomer.php`, {
-      signal: abortCtr.signal,
-      method: "POST",
-      body: JSON.stringify(input),
-      headers: headers,
-    });
-    res = await res.json();
-    console.log(res);
-    if (res.error) {
-      throw res;
-    } else {
-      return res;
-    }
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
-const DeleteCustomerFn = async (input) => {
-  try {
-    let res = await fetch(`${urlLink.url}deletecustomer.php`, {
-      signal: abortCtr.signal,
-      method: "POST",
-      body: JSON.stringify(input),
-      headers: headers,
-    });
-    res = await res.json();
-    console.log(res);
-    if (res.error) {
-      throw res;
-    } else {
-      return res;
-    }
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
+  return throwOnError(await supabase.from('customers').insert(row).select().single())
+}
 
-export { AddCustomerFn, EditCustomerFn, DeleteCustomerFn };
+const EditCustomerFn = async (input) => {
+  const { userId } = await getContext()
+  const row = {
+    name:        input.name,
+    mobile:      input.mobile ?? '',
+    email:       input.email ?? '',
+    address:     input.address ?? '',
+    status:      input.status ?? 1,
+    modified_by: userId,
+  }
+  return throwOnError(
+    await supabase.from('customers').update(row).eq('id', input.id).select().single(),
+  )
+}
+
+const DeleteCustomerFn = async (input) =>
+  throwOnError(
+    await supabase.from('customers').delete().eq('id', input.id),
+  )
+
+export { AddCustomerFn, EditCustomerFn, DeleteCustomerFn }
+

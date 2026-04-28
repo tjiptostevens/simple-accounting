@@ -1,10 +1,9 @@
 import React, { useMemo, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import createTree from "../custom/createTree";
 import BalanceLists from "../dashboard/master/balanceLists";
 import BalanceTotal from "../dashboard/master/balanceTotal";
 import { reqCoa, reqCoaList, reqJournalEntry, reqPeriod } from "../reqFetch";
-import useFetch from "../useFetch";
 import ReportList from "./reportList";
 import ReportTable from "./reportTable";
 
@@ -12,19 +11,17 @@ const TrialBalance = () => {
   // const { data: trial } = useFetch('gettrial.php')
   const [data, setData] = useState({ period: "" });
   const [vis, setVis] = useState({ modal: false });
-  let periodStorage = localStorage.getItem("period");
-  // let period = JSON.parse(periodStorage);
   // const { data: coaList } = useFetch('getcoalist.php')
 
-  const { data: period } = useQuery("period", reqPeriod);
-  const { data: coa } = useQuery("coa", reqCoa);
-  const { data: journalEntry } = useQuery("journalEntry", reqJournalEntry);
+  const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod });
+  const { data: coa } = useQuery({ queryKey: ['coa'], queryFn: reqCoa });
+  const { data: journalEntry } = useQuery({ queryKey: ['journalEntry'], queryFn: reqJournalEntry });
   const {
     data: coaList,
     error,
     isError,
     isLoading,
-  } = useQuery("coaList", reqCoaList);
+  } = useQuery({ queryKey: ['coaList'], queryFn: reqCoaList });
 
   // create a new COA
   let newCoa = [];
@@ -159,7 +156,7 @@ const TrialBalance = () => {
       {/* {JSON.stringify(assetsFill)} */}
       {/* Component Title */}
       <div
-        className="w-100"
+        className="w-full"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
         <div className=" __content_title"> Adj. Trial Balance</div>
@@ -170,7 +167,7 @@ const TrialBalance = () => {
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <input
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               type="search"
               name="search"
               placeholder="Search by text"
@@ -178,7 +175,7 @@ const TrialBalance = () => {
             />
           </div> */}
           <select
-            className="form-control m-1"
+            className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
             name="period"
             onChange={handleChange}
             id="period"
@@ -190,14 +187,14 @@ const TrialBalance = () => {
             ))}
           </select>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: "fit-content" }}
           >
             <i className="bi bi-arrow-right-square"></i>
           </button>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: "fit-content" }}
           >
@@ -206,7 +203,7 @@ const TrialBalance = () => {
         </div>
       </div>
       <hr style={{ margin: "0" }} />
-      <div className="w-100" style={{ height: "25px" }}></div>
+      <div className="w-full" style={{ height: "25px" }}></div>
       <div
         style={{
           display: "flex",
@@ -216,9 +213,9 @@ const TrialBalance = () => {
           padding: "7px 20px 7px 40px",
         }}
       >
-        <div className="col-md-6">Account</div>
+        <div className="md:w-1/2">Account</div>
         <div
-          className="col-md-6"
+          className="md:w-1/2"
           style={{
             display: "flex",
             flexDirection: "row",
@@ -227,15 +224,15 @@ const TrialBalance = () => {
             textAlign: "right",
           }}
         >
-          <div className="col-md-6">Debit</div>
-          <div className="col-md-6">Credit</div>
+          <div className="md:w-1/2">Debit</div>
+          <div className="md:w-1/2">Credit</div>
         </div>
         <hr />
       </div>
-      <div className="w-100" style={{ overflowY: "auto" }}>
+      <div className="w-full" style={{ overflowY: "auto" }}>
         {newCoa && <BalanceLists list={newCoa} />}
       </div>
-      <div className="w-100">
+      <div className="w-full">
         <BalanceTotal list={newCoa} />
       </div>
     </>

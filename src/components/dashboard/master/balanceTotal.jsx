@@ -46,7 +46,7 @@ const BalanceTotal = ({ list }) => {
             Total
           </div>
           <div
-            className="col-md-6"
+            className="md:w-1/2"
             style={{
               display: "flex",
               flexDirection: "row",

@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
-import useFetch from '../../useFetch'
-import urlLink from '../../config/urlLink'
 
 const AddOrder = (props) => {
-  const { data: coa } = useFetch('getcoa.php')
   const [data, setData] = useState({ required: true })
   const handleChange = (e) => {
     console.log(`${[e.target.name]}`, e.target.value)
@@ -19,133 +16,41 @@ const AddOrder = (props) => {
   }
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log(data)
-    const abortCtr = new AbortController()
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': window.location.origin,
-    }
-    setTimeout(() => {
-      fetch(`${urlLink.url}addorder.php`, {
-        signal: abortCtr.signal,
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: headers,
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res)
-          setData({
-            required: true,
-            name: '',
-            mobile: '',
-            email: '',
-            address: '',
-            message: res.message,
-          })
-        })
-
-        // display an alert message for an error
-        .catch((err) => {
-          console.log(err)
-          setData({
-            ...data,
-            msg: 'Error Connection',
-          })
-        })
-    }, 50)
+    console.log('AddOrder: not yet implemented', data)
   }
   return (
     <>
       <div className="modal_title">
-        <b>Add Customer</b>
+        <b>Add Order</b>
       </div>
-      {/* {JSON.stringify(data)} <br /> */}
-      {/* {console.log(props)} */}
-      {/* {JSON.stringify(coa)} */}
       <div className="modal_content">
         <form onSubmit={handleSubmit} method="post">
-          {/* Customer Name */}
+          {/* Order Name */}
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full"
             style={{ margin: '0px', padding: '0px' }}
           >
             <label className="label_title">
-              Name <span className="text-danger">*</span>
+              Name <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="text"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.name}
               name="name"
               id="name"
-            />
-          </div>
-          {/* Customer Mobile */}
-          <div
-            className="row col-md-12"
-            style={{ margin: '0px', padding: '0px' }}
-          >
-            <label className="label_title">
-              Mobile <span className="text-danger">*</span>
-            </label>
-            <input
-              required={data.required}
-              onChange={handleChange}
-              type="tel"
-              className="form-control mb-2"
-              value={data.mobile}
-              name="mobile"
-              id="mobile"
-            />
-          </div>
-          {/* Customer Email */}
-          <div
-            className="row col-md-12"
-            style={{ margin: '0px', padding: '0px' }}
-          >
-            <label className="label_title">
-              E-Mail <span className="text-danger">*</span>
-            </label>
-            <input
-              required={data.required}
-              onChange={handleChange}
-              type="email"
-              className="form-control mb-2"
-              value={data.email}
-              name="email"
-              id="email"
-            />
-          </div>
-          {/* Customer Address */}
-          <div
-            className="row col-md-12 mb-5"
-            style={{ margin: '0px', padding: '0px' }}
-          >
-            <label className="label_title">
-              Address <span className="text-danger">*</span>
-            </label>
-            <input
-              required={data.required}
-              onChange={handleChange}
-              type="address"
-              className="form-control mb-2"
-              value={data.address}
-              name="address"
-              id="address"
             />
           </div>
           <div>
             <p>{data.message}</p>
           </div>
           {/* Button */}
-          <button className="btn btn-primary" type="submit">
+          <button className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer" type="submit">
             Save
           </button>
-          <button className="btn btn-warning" onClick={handleClose}>
+          <button className="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg transition-colors cursor-pointer ml-2" onClick={handleClose}>
             Cancel
           </button>
         </form>

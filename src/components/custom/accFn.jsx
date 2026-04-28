@@ -1,139 +1,126 @@
-import urlLink from "../config/urlLink";
+/**
+ * accFn.js  –  Journal & equity mutations via Supabase
+ */
+import { supabase } from '../../lib/supabase'
 
-const abortCtr = new AbortController();
-const headers = {
-  Accept: "application/json",
-  "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": window.location.origin,
-};
-const loginUser = localStorage.getItem("loginUser");
-const company = localStorage.getItem("company");
+const throwOnError = ({ data, error }) => {
+  if (error) throw new Error(error.message)
+  return data
+}
 
+// ─────────────────────────────────────────────────────────────
+// Get the last journal serial for a given type
+// Returns { last: "0042" }
+// ─────────────────────────────────────────────────────────────
 const GetJournalLastFn = async (journalType) => {
-  try {
-    let res = await fetch(
-      `${urlLink.url}getjournallast.php?type=${journalType}`,
-      {
-        signal: abortCtr.signal,
-        method: "GET",
-        headers: headers,
-      }
-    );
-    res = await res.json();
-    if (res.error) {
-      throw res;
-    } else {
-      return res;
-    }
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
-const AddJournalFn = async (
-  input = {
-    name: `JV/{MM}/####`,
-    title: "",
-    user_remark: "",
-    type: "Journal Umum",
-    ref: "",
-    ref_id: "",
-    company: company,
-    pay_to_recd_from: "",
-    total_debit: 0,
-    total_credit: 0,
-    posting_date: `{YY}-{MM}-{DD}`,
-    created_by: loginUser,
-  }
-) => {
-  console.log(input);
-  let x = { ...input, company: company, created_by: loginUser };
-  try {
-    let res = await fetch(`${urlLink.url}addjournal.php`, {
-      signal: abortCtr.signal,
-      method: "POST",
-      body: JSON.stringify(x),
-      headers: headers,
-    });
-    res = await res.json();
-    console.log(res);
-    if (res.error) {
-      throw res;
-    } else {
-      return res;
-    }
-  } catch (error) {
-    // display an alert message for an error
-    console.log(error);
-    return error;
-  }
-};
-const AddJournalEntryFn = async (
-  input = {
-    idx: "1",
-    acc: "",
-    party_type: null,
-    party: null,
-    debit: 0,
-    credit: 0,
-    acc_type: null,
-    posting_date: `{YY}-{MM}-{DD}`,
-    company: company,
-  }
-) => {
-  let x = { ...input, company: company, created_by: loginUser };
-  try {
-    let res = await fetch(`${urlLink.url}addjournalentry.php`, {
-      signal: abortCtr.signal,
-      method: "POST",
-      body: JSON.stringify(x),
-      headers: headers,
-    });
-    res = await res.json();
-    console.log(res);
-    if (res.error) {
-      throw res;
-    } else {
-      return res;
-    }
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
-const AddEquityChangeFn = async (
-  input = {
-    name: `period name`,
-    opening: "",
-    profit: "",
-    prive: "",
-    closing: "",
-    company: company,
-    posting_date: `{YY}-{MM}-{DD}`,
-    created_by: loginUser,
-  }
-) => {
-  console.log(input);
-  let x = { ...input, company: company, created_by: loginUser };
-  try {
-    let res = await fetch(`${urlLink.url}addequitychange.php`, {
-      signal: abortCtr.signal,
-      method: "POST",
-      body: JSON.stringify(x),
-      headers: headers,
-    });
-    res = await res.json();
-    console.log(res);
-    if (res.error) {
-      throw res;
-    } else {
-      return res;
-    }
-  } catch (error) {
-    // display an alert message for an error
-    console.log(error);
-    return error;
-  }
-};
+  const { data, error } = await supabase
+    .from('journals')
+    .select('name')
+    .eq('type', journalType)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single()
 
-export { AddJournalFn, AddJournalEntryFn, AddEquityChangeFn, GetJournalLastFn };
+  if (error && error.code !== 'PGRST116') throw new Error(error.message)
+  if (!data) return { last: '0000' }
+
+  // Extract the 4-digit serial from the name e.g. "JV/2024/0042" → "0042"
+  const parts = data.name.split('/')
+  return { last: parts[parts.length - 1] ?? '0000' }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Add a journal header
+// ─────────────────────────────────────────────────────────────
+const AddJournalFn = async (input) => {
+  const { data: sessionData } = await supabase.auth.getSession()
+  const userId = sessionData?.session?.user?.id
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('company_id')
+    .eq('id', userId)
+    .single()
+
+  const row = {
+    name:             input.name,
+    title:            input.title ?? '',
+    type:             input.type,
+    posting_date:     input.posting_date,
+    total_debit:      Number(input.total_debit ?? 0),
+    total_credit:     Number(input.total_credit ?? 0),
+    pay_to_recd_from: input.pay_to_recd_from ?? '',
+    user_remark:      input.user_remark ?? '',
+    ref:              input.ref ?? '',
+    ref_id:           input.ref_id ?? '',
+    company_id:       profile?.company_id,
+    created_by:       userId,
+  }
+  return throwOnError(await supabase.from('journals').insert(row).select().single())
+}
+
+// ─────────────────────────────────────────────────────────────
+// Add a journal entry line
+// ─────────────────────────────────────────────────────────────
+const AddJournalEntryFn = async (input) => {
+  const { data: sessionData } = await supabase.auth.getSession()
+  const userId = sessionData?.session?.user?.id
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('company_id')
+    .eq('id', userId)
+    .single()
+
+  // Resolve journal_id from parent name
+  const { data: journal, error: jErr } = await supabase
+    .from('journals')
+    .select('id')
+    .eq('name', input.parent)
+    .single()
+  if (jErr) throw new Error(jErr.message)
+
+  const row = {
+    journal_id:   journal.id,
+    parent:       input.parent,
+    acc:          input.acc,
+    acc_type:     input.acc_type ?? null,
+    party_type:   input.party_type ?? null,
+    party:        input.party ?? null,
+    debit:        Number(input.debit ?? 0),
+    credit:       Number(input.credit ?? 0),
+    posting_date: input.posting_date,
+    company_id:   profile?.company_id,
+    created_by:   userId,
+  }
+  return throwOnError(await supabase.from('journal_entries').insert(row).select().single())
+}
+
+// ─────────────────────────────────────────────────────────────
+// Add an equity change record (used when closing a period)
+// ─────────────────────────────────────────────────────────────
+const AddEquityChangeFn = async (input) => {
+  const { data: sessionData } = await supabase.auth.getSession()
+  const userId = sessionData?.session?.user?.id
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('company_id')
+    .eq('id', userId)
+    .single()
+
+  const row = {
+    period_name:  input.name,
+    opening:      Number(input.opening ?? 0),
+    profit:       Number(input.profit ?? 0),
+    prive:        Number(input.prive ?? 0),
+    closing:      Number(input.closing ?? 0),
+    posting_date: input.posting_date,
+    company_id:   profile?.company_id,
+    created_by:   userId,
+  }
+  return throwOnError(await supabase.from('equity_changes').insert(row).select().single())
+}
+
+export { AddJournalFn, AddJournalEntryFn, AddEquityChangeFn, GetJournalLastFn }
+

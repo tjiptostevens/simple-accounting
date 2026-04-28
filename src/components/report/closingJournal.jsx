@@ -1,13 +1,12 @@
 import React, { useState, useMemo } from 'react'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { showFormattedDate } from '../custom/dateFn'
 import { reqJournalEntry, reqJournalList, reqPeriod } from '../reqFetch'
-// import useFetch from '../useFetch'
 import ReportTable from './reportTable'
 
 const ClosingJournal = () => {
   const [data, setData] = useState({ period: '' })
-  const { data: period } = useQuery('period', reqPeriod)
+  const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod })
   const { data: generalJournal, error, isError, isLoading } = useQuery(
     'journallist',
     reqJournalList,
@@ -33,8 +32,7 @@ const ClosingJournal = () => {
   //   error,
   //   isError,
   //   isLoading,
-  // } = useQuery("journalEntry", reqJournalEntry);
-  // const { data: generalJournal } = useFetch('getjournalentry.php')
+  // } = useQuery({ queryKey: ['journalEntry'], queryFn: reqJournalEntry });
 
   const handleChange = (e) => {
     console.log(`${[e.target.name]}`, e.target.value)
@@ -95,7 +93,7 @@ const ClosingJournal = () => {
       {/* Component Title */}
 
       <div
-        className="w-100"
+        className="w-full"
         style={{ display: 'flex', justifyContent: 'space-between' }}
       >
         <div className=" __content_title">Closing Journal</div>
@@ -106,7 +104,7 @@ const ClosingJournal = () => {
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <input
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               type="search"
               name="search"
               placeholder="Search by text"
@@ -118,7 +116,7 @@ const ClosingJournal = () => {
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <select
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               name="period"
               onChange={handleChange}
               id="period"
@@ -130,7 +128,7 @@ const ClosingJournal = () => {
               ))}
             </select>
             {/* <select
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               name="search_type"
               onChange={handleChange}
               id="type"
@@ -153,14 +151,14 @@ const ClosingJournal = () => {
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <input
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               type="date"
               name="start_date"
               placeholder="Type to search"
               onChange={handleChange}
             />
             <input
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               type="date"
               name="end_date"
               value={data.end_date}
@@ -168,14 +166,14 @@ const ClosingJournal = () => {
             />
           </div>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: 'fit-content' }}
           >
             <i className="bi bi-arrow-right-square"></i>
           </button>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: 'fit-content' }}
           >
@@ -185,7 +183,7 @@ const ClosingJournal = () => {
       </div>
 
       <hr style={{ margin: '0' }} />
-      <div className="w-100" style={{ height: '25px' }}></div>
+      <div className="w-full" style={{ height: '25px' }}></div>
       {/* {newJournal.length} */}
       {/* {console.log(newJournal)} */}
       {/* title */}
@@ -205,7 +203,7 @@ const ClosingJournal = () => {
           Transaction
         </div>
         <div
-          className="col-md-6"
+          className="md:w-1/2"
           style={{
             color: 'white',
             textAlign: 'left',
@@ -217,23 +215,23 @@ const ClosingJournal = () => {
         >
           {' '}
           <div
-            className="w-100"
+            className="w-full"
             style={{ display: 'flex', flexDirection: 'row' }}
           >
-            <div className="col-md-6">Account</div>
+            <div className="md:w-1/2">Account</div>
             <div className="col-md-3" style={{ textAlign: 'right' }}>
               Debit
             </div>
             <div className="col-md-3" style={{ textAlign: 'right' }}>
               Credit
             </div>
-            <div className="w-100" style={{ height: '7px' }}></div>
+            <div className="w-full" style={{ height: '7px' }}></div>
           </div>
         </div>
       </div>
 
       <hr style={{ margin: '0' }} />
-      <div className="w-100" style={{ overflowY: 'auto' }}>
+      <div className="w-full" style={{ overflowY: 'auto' }}>
         {newJournal
           .filter((f) => f.type === 'Closing' && f.parent !== '' )
           .map((d) => (
@@ -257,7 +255,7 @@ const ClosingJournal = () => {
                 </div>
 
                 <div
-                  className="col-md-6"
+                  className="md:w-1/2"
                   style={{
                     color: 'white',
                     textAlign: 'left',
@@ -271,10 +269,10 @@ const ClosingJournal = () => {
                     .sort((a, b) => (a.idx > b.idx ? 1 : -1))
                     .map((c) => (
                       <div
-                        className="w-100"
+                        className="w-full"
                         style={{ display: 'flex', flexDirection: 'row' }}
                       >
-                        <div className="col-md-6">
+                        <div className="md:w-1/2">
                           {c.acc + ' - ' + c.acc_name}
                         </div>
                         <div
@@ -293,11 +291,11 @@ const ClosingJournal = () => {
                             .toString()
                             .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
                         </div>
-                        <div className="w-100" style={{ height: '7px' }}></div>
+                        <div className="w-full" style={{ height: '7px' }}></div>
                       </div>
                     ))}
                   <div
-                    className="w-100"
+                    className="w-full"
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -336,7 +334,7 @@ const ClosingJournal = () => {
                         .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + '.00'}
                       
                     </div>
-                    <div className="w-100" style={{ height: '7px' }}></div>
+                    <div className="w-full" style={{ height: '7px' }}></div>
                   </div>
                 </div>
               </div>

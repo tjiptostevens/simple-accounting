@@ -1,17 +1,20 @@
 import React, { useState, useMemo } from 'react'
-import useFetch from '../../useFetch'
-import urlLink from '../../config/urlLink'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { reqCoa } from '../../reqFetch'
+import { EditCoaFn } from '../../custom/coaFn'
 
-const EditCoa = (props) => {
-  const { data: coa } = useFetch('getcoa.php')
+const EditCoa = ({ show, close, detail }) => {
+  const queryClient = useQueryClient()
+  const { data: coa } = useQuery({ queryKey: ['coa'], queryFn: reqCoa })
   const [data, setData] = useState({
-    is_group: props.data.is_group === '0' ? false : true,
+    is_group: detail.is_group === '0' ? false : true,
     required: true,
-    parent: props.data.parent,
-    number: props.data.number,
-    last: props.data.number,
-    name: props.data.name,
-    type: props.data.type,
+    parent: detail.parent,
+    number: detail.number,
+    last: detail.number,
+    name: detail.name,
+    type: detail.type,
+    id: detail.id,
   })
   const handleChange = (e) => {
     console.log(`${[e.target.name]}`, e.target.value)
@@ -32,74 +35,40 @@ const EditCoa = (props) => {
         )
     )
   }, [coa, data.number])
-  const handleClose = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     console.log(data)
-    setData({ ...data, required: !data.required })
-    props.handleClose(e)
-  }
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log(data)
-    const abortCtr = new AbortController()
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': window.location.origin,
+    try {
+      await EditCoaFn(data)
+      queryClient.invalidateQueries({ queryKey: ['coa'] })
+      close()
+    } catch (err) {
+      console.log(err)
     }
-    setTimeout(() => {
-      fetch(`${urlLink.url}editcoa.php`, {
-        signal: abortCtr.signal,
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: headers,
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res)
-          setData({
-            number: '',
-            name: '',
-            parent: '',
-            is_group: null,
-            required: true,
-            message: res.message,
-          })
-        })
-
-        // display an alert message for an error
-        .catch((err) => {
-          console.log(err)
-          setData({
-            ...data,
-            msg: 'Error Connection',
-          })
-        })
-    }, 50)
   }
+
+  if (!show) return null
+
   return (
     <>
       <div className="modal_title">
         <b>Edit Chart Of Account</b>
       </div>
-      {JSON.stringify(data)} <br />
-      {/* {console.log(props)} */}
-      {/* {JSON.stringify(coa)} */}
       <div className="modal_content">
         <form onSubmit={handleSubmit} method="post">
           {/* Account Number */}
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full"
             style={{ margin: '0px', padding: '0px' }}
           >
             <label className="label_title">
-              Account Number <span className="text-danger">*</span>
+              Account Number <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="number"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.number}
               name="number"
               id="number"
@@ -107,17 +76,17 @@ const EditCoa = (props) => {
           </div>
           {/* Account Name */}
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full"
             style={{ margin: '0px', padding: '0px' }}
           >
             <label className="label_title">
-              Account Name <span className="text-danger">*</span>
+              Account Name <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="text"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.name}
               name="name"
               id="name"
@@ -125,17 +94,17 @@ const EditCoa = (props) => {
           </div>
           {/* Account Type*/}
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full"
             style={{ margin: '0px', padding: '0px' }}
           >
             <label className="label_title">
-              Account Type <span className="text-danger">*</span>
+              Account Type <span className="text-red-500">*</span>
             </label>
             <select
               disabled={true}
               name="type"
               id="type"
-              className="form-select"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               required={data.required}
               onChange={handleChange}
               value={data.type}
@@ -149,7 +118,7 @@ const EditCoa = (props) => {
           </div>
           {/* Group */}
           <div
-            className="row col-md-12 mb-2"
+            className="flex flex-wrap w-full mb-2"
             style={{
               margin: '0px',
               padding: '0px',
@@ -159,7 +128,7 @@ const EditCoa = (props) => {
           >
             <input
               disabled={
-                props.data.child.length > 0 || props.data.parent === '0'
+                detail.child?.length > 0 || detail.parent === '0'
               }
               className="modal-check"
               type="checkbox"
@@ -171,7 +140,6 @@ const EditCoa = (props) => {
                 })
               }
               checked={data.parent === '0' ? true : data.is_group}
-              // onChange={handleChange}
             />
             <label className="label_title" style={{ paddingLeft: '15px' }}>
               is Group
@@ -179,14 +147,14 @@ const EditCoa = (props) => {
           </div>
           {/* Parent Name */}
           <div
-            className="row col-md-12 mb-5"
+            className="flex flex-wrap w-full mb-5"
             style={{ margin: '0px', padding: '0px' }}
           >
             <label className="label_title">
-              Parent Name <span className="text-danger">*</span>
+              Parent Name <span className="text-red-500">*</span>
             </label>
             <select
-              className="form-select"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               name="parent"
               id="parent"
               onChange={handleChange}
@@ -214,10 +182,10 @@ const EditCoa = (props) => {
           </div>
 
           {/* Button */}
-          <button className="btn btn-primary" type="submit">
+          <button className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer" type="submit">
             Save
           </button>
-          <button className="btn btn-warning" onClick={handleClose}>
+          <button className="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg transition-colors cursor-pointer ml-2" onClick={(e) => { e.preventDefault(); close(); }}>
             Cancel
           </button>
         </form>

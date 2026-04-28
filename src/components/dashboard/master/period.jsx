@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   AddJournalEntryFn,
   AddJournalFn,
@@ -10,22 +10,22 @@ import { ClosePeriodFn } from "../../custom/periodFn";
 import { reqCoaList, reqJournalEntry, reqPeriod } from "../../reqFetch";
 import Modal from "../../site/modal";
 import AddPeriod from "../modal/addPeriod";
+import { useAuth } from "../../../context/AuthContext";
 
 const Period = () => {
   const [vis, setVis] = useState({ modal: false });
-  let periodStorage = localStorage.getItem("period");
-  let periodStore = JSON.parse(periodStorage);
+  const { loginUser, companyId: company } = useAuth();
   const {
     data: period,
     error,
     isError,
     isLoading,
-  } = useQuery("period", reqPeriod);
-  const { data: journalEntry } = useQuery("journalEntry", reqJournalEntry);
-  const { data: coaList } = useQuery("coaList", reqCoaList);
+  } = useQuery({ queryKey: ['period'], queryFn: reqPeriod });
+  const { data: journalEntry } = useQuery({ queryKey: ['journalEntry'], queryFn: reqJournalEntry });
+  const { data: coaList } = useQuery({ queryKey: ['coaList'], queryFn: reqCoaList });
 
-  const loginUser = localStorage.getItem("loginUser");
-  const company = localStorage.getItem("company");
+  const activePeriod = period?.find(p => p.status === '1') ?? period?.[0];
+
   // create a new COA
   let newCoa = [];
   coaList?.forEach((e) => {
@@ -45,16 +45,16 @@ const Period = () => {
   });
   // Filter journal Entry by period
   let jE = useMemo(() => {
-    return periodStore === ""
+    return false
       ? journalEntry?.sort((a, b) => (a.posting_date > b.posting_date ? 1 : -1))
       : journalEntry
           ?.sort((a, b) => (a.posting_date > b.posting_date ? 1 : -1))
           .filter(
             (d) =>
-              new Date(d.posting_date) >= new Date(periodStore.start) &&
-              new Date(d.posting_date) <= new Date(periodStore.end)
+              new Date(d.posting_date) >= new Date(activePeriod?.start) &&
+              new Date(d.posting_date) <= new Date(activePeriod?.end)
           );
-  }, [journalEntry, period, periodStore]);
+  }, [journalEntry, period]);
   // new COA by filtered Journal Entry
 
   jE?.forEach((e) => {
@@ -62,7 +62,6 @@ const Period = () => {
       try {
         let i = newCoa.findIndex((d) => d.number === e.acc);
         let d, c;
-        // console.log(e.acc, e.debit, parseInt(e.debit))
         d = parseInt(e.debit) + parseInt(newCoa[i].debit);
         c = parseInt(e.credit) + parseInt(newCoa[i].credit);
         let t = 0;
@@ -119,7 +118,6 @@ const Period = () => {
     return (
       newCoa &&
       newCoa
-        // .sort((a, b) => (a.name > b.name ? 1 : -1))
         .filter((d) => d.type === "Assets")
     );
   }, [newCoa]);
@@ -127,7 +125,6 @@ const Period = () => {
     return (
       newCoa &&
       newCoa
-        // .sort((a, b) => (a.name > b.name ? 1 : -1))
         .filter((d) => d.type === "Liability")
     );
   }, [newCoa]);
@@ -135,7 +132,6 @@ const Period = () => {
     return (
       newCoa &&
       newCoa
-        // .sort((a, b) => (a.name > b.name ? 1 : -1))
         .filter((d) => d.type === "Equity")
     );
   }, [newCoa]);
@@ -143,7 +139,6 @@ const Period = () => {
     return (
       newCoa &&
       newCoa
-        // .sort((a, b) => (a.name > b.name ? 1 : -1))
         .filter((d) => d.type === "Income" && d.is_group === "0")
     );
   }, [newCoa]);
@@ -151,14 +146,11 @@ const Period = () => {
     return (
       newCoa &&
       newCoa
-        // .sort((a, b) => (a.name > b.name ? 1 : -1))
         .filter((d) => d.type === "Expense" && d.is_group === "0")
     );
   }, [newCoa]);
   const handleClose = (e) => {
-    // e.preventDefault()
     setVis({ ...vis, modal: false });
-
     window.location.reload();
   };
   const handleEdit = (e, input) => {
@@ -168,7 +160,6 @@ const Period = () => {
   };
   const handleClosePeriod = async (e, input, status) => {
     e.preventDefault();
-    // detail Periode
     let x = {
       ...input,
       status: status,
@@ -383,7 +374,6 @@ const Period = () => {
       let arPrive = aPrive.forEach((e) => {
         AddJournalEntryFn(e);
       });
-      // let res = 0;
       console.log(res);
       console.log(
         addIncome,
@@ -406,8 +396,6 @@ const Period = () => {
     } finally {
       setVis({ ...vis, modal: true, value: 1 });
     }
-
-    // setVis({ ...vis, modal: true, value: 2, data: x })
   };
   if (isLoading) {
     return <div>Loading...</div>;
@@ -437,21 +425,20 @@ const Period = () => {
       />
       {/* Component Title */}
       <div
-        className="w-100"
+        className="w-full"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
         <div className=" __content_title">Period</div>
-        {/* add User + search */}
         <div className=" __search_bar">
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: "fit-content" }}
           >
             <i className="bi bi-printer"></i>
           </button>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => setVis({ ...vis, modal: true, value: 1 })}
           >
             <i className="bi bi-plus" style={{ marginRight: "10px" }}></i>
@@ -460,12 +447,12 @@ const Period = () => {
         </div>
       </div>
       <hr style={{ margin: "0" }} />
-      <div className="w-100" style={{ height: "25px" }}></div>
+      <div className="w-full" style={{ height: "25px" }}></div>
 
       {/* Judul */}
-      <div className="row col-md-12" style={{ paddingLeft: "25px" }}>
+      <div className="flex flex-wrap w-full" style={{ paddingLeft: "25px" }}>
         <div
-          className="row d-none d-md-flex col-md-12"
+          className="hidden md:flex flex-wrap w-full"
           style={{
             color: "white",
             textAlign: "left",
@@ -473,26 +460,26 @@ const Period = () => {
             fontWeight: "600",
           }}
         >
-          <div className="col-md-1">Name</div>
-          <div className="col-md-3">Description</div>
-          <div className="col-md-2" style={{ textAlign: "center" }}>
+          <div className="md:w-1/12">Name</div>
+          <div className="md:w-3/12">Description</div>
+          <div className="md:w-2/12" style={{ textAlign: "center" }}>
             Start Date
           </div>
-          <div className="col-md-2" style={{ textAlign: "center" }}>
+          <div className="md:w-2/12" style={{ textAlign: "center" }}>
             End Date
           </div>
-          <div className="col-md-1">Status</div>
-          <div className="col-md-2"></div>
+          <div className="md:w-1/12">Status</div>
+          <div className="md:w-2/12"></div>
         </div>
         <hr />
       </div>
 
       {/* Isi */}
-      <div className="row col-md-12" style={{ paddingLeft: "25px" }}>
+      <div className="flex flex-wrap w-full" style={{ paddingLeft: "25px" }}>
         {period?.map((d, i) => (
-          <div key={i}>
+          <div key={i} className="w-full">
             <div
-              className="row col-md-12"
+              className="flex flex-wrap w-full"
               style={{
                 color: "white",
                 textAlign: "left",
@@ -500,7 +487,7 @@ const Period = () => {
               }}
             >
               <div
-                className="col-md-1 col-6"
+                className="md:w-1/12 w-1/2"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -510,7 +497,7 @@ const Period = () => {
                 {d.name}
               </div>
               <div
-                className="col-md-3 col-12"
+                className="md:w-3/12 w-full"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -520,7 +507,7 @@ const Period = () => {
                 {d.description}
               </div>
               <div
-                className="col-md-2 col-4"
+                className="md:w-2/12 w-1/3"
                 style={{
                   textAlign: "right",
                   display: "flex",
@@ -531,7 +518,7 @@ const Period = () => {
                 {showFormattedDate(d.start)}
               </div>
               <div
-                className="col-md-2 col-4"
+                className="md:w-2/12 w-1/3"
                 style={{
                   textAlign: "right",
                   display: "flex",
@@ -542,37 +529,30 @@ const Period = () => {
                 {showFormattedDate(d.end)}
               </div>
               <div
-                className="col-md-1 col-4"
+                className="md:w-1/12 w-1/3"
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "flex-start",
                 }}
               >
-                {/* {{ 0: 'Closed', 1: 'Active' }[e.status]} */}
                 {
                   {
                     0: (
-                      <div
-                        className="text-warning"
-                        // style={{ width: '11%' }}
-                      >
-                        <i className="bi bi-check-all text-warning"></i>Closed
+                      <div className="text-yellow-500">
+                        <i className="bi bi-check-all text-yellow-500"></i>Closed
                       </div>
                     ),
                     1: (
-                      <div
-                        className="text-success"
-                        // style={{ width: '11%' }}
-                      >
-                        <i className="bi bi-check-all text-success"></i>Active
+                      <div className="text-green-500">
+                        <i className="bi bi-check-all text-green-500"></i>Active
                       </div>
                     ),
                   }[d.status]
                 }
               </div>
               <div
-                className="col-md-2 col-4"
+                className="md:w-2/12 w-1/3"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -580,19 +560,12 @@ const Period = () => {
                 }}
               >
                 <div
-                  className="btn-group btn-group-toggle"
+                  className="flex"
                   style={{ padding: "0 10px" }}
                 >
-                  {/* <button
-                    className="btn btn-sm btn-warning"
-                    style={{ padding: "2px 7px", fontSize: "10px" }}
-                    onClick={(e) => handleEdit(e, d)}
-                  >
-                    Edit
-                  </button> */}
                   {d.status === "1" ? (
                     <button
-                      className="btn btn-danger"
+                      className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
                       onClick={(e) => handleClosePeriod(e, d, 0)}
                     >
                       Close Period

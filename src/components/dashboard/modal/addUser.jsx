@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import useFetch from '../../useFetch'
-import urlLink from '../../config/urlLink'
+import { supabase } from '../../../lib/supabase'
+import { useAuth } from '../../../context/AuthContext'
 
 const AddUser = (props) => {
-  const { data: coa } = useFetch('getcoa.php')
+  const { companyId } = useAuth()
   const [data, setData] = useState({ required: true })
   const handleChange = (e) => {
     console.log(`${[e.target.name]}`, e.target.value)
@@ -17,70 +17,53 @@ const AddUser = (props) => {
     setData({ ...data, required: !data.required })
     props.handleClose(e)
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     console.log(data)
-    const abortCtr = new AbortController()
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': window.location.origin,
-    }
-    setTimeout(() => {
-      fetch(`${urlLink.url}adduser.php`, {
-        signal: abortCtr.signal,
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: headers,
+    try {
+      const { error } = await supabase.from('profiles').insert({
+        first_name: data.first_name,
+        last_name: data.last_name,
+        mobile: data.mobile,
+        role: data.role,
+        company_id: companyId,
       })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res)
-          setData({
-            required: true,
-            first_name: '',
-            last_name: '',
-            mobile: '',
-            email: '',
-            usr: '',
-            pwd: '',
-            message: res.message,
-          })
-        })
-
-        // display an alert message for an error
-        .catch((err) => {
-          console.log(err)
-          setData({
-            ...data,
-            msg: 'Error Connection',
-          })
-        })
-    }, 50)
+      if (error) throw error
+      setData({
+        required: true,
+        first_name: '',
+        last_name: '',
+        mobile: '',
+        email: '',
+        usr: '',
+        pwd: '',
+        message: 'User added successfully',
+      })
+    } catch (err) {
+      console.log(err)
+      setData({ ...data, message: err.message })
+    }
   }
   return (
     <>
       <div className="modal_title">
         <b>Add User</b>
       </div>
-      {/* {JSON.stringify(data)} <br /> */}
-      {/* {console.log(props)} */}
-      {/* {JSON.stringify(coa)} */}
       <div className="modal_content">
         <form onSubmit={handleSubmit} method="post">
           {/* User First Name */}
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full"
             style={{ margin: '0px', padding: '0px' }}
           >
             <label className="label_title">
-              First Name <span className="text-danger">*</span>
+              First Name <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="text"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.first_name}
               name="first_name"
               id="first_name"
@@ -88,14 +71,14 @@ const AddUser = (props) => {
           </div>
           {/* User Last Name */}
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full"
             style={{ margin: '0px', padding: '0px' }}
           >
             <label className="label_title">Last Name</label>
             <input
               onChange={handleChange}
               type="text"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.last_name}
               name="last_name"
               id="last_name"
@@ -103,84 +86,48 @@ const AddUser = (props) => {
           </div>
           {/* Customer Mobile */}
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full"
             style={{ margin: '0px', padding: '0px' }}
           >
             <label className="label_title">
-              Mobile <span className="text-danger">*</span>
+              Mobile <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="tel"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.mobile}
               name="mobile"
               id="mobile"
             />
           </div>
-          {/* Customer Email */}
+          {/* Role */}
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full mb-5"
             style={{ margin: '0px', padding: '0px' }}
           >
             <label className="label_title">
-              E-Mail <span className="text-danger">*</span>
-            </label>
-            <input
-              required={data.required}
-              onChange={handleChange}
-              type="email"
-              className="form-control mb-2"
-              value={data.email}
-              name="email"
-              id="email"
-            />
-          </div>
-          {/* Username */}
-          <div
-            className="row col-md-12"
-            style={{ margin: '0px', padding: '0px' }}
-          >
-            <label className="label_title">
-              Username <span className="text-danger">*</span>
+              Role <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="text"
-              className="form-control mb-2"
-              value={data.usr}
-              name="usr"
-              id="usr"
-            />
-          </div>
-          {/* Password */}
-          <div
-            className="row col-md-12 mb-5"
-            style={{ margin: '0px', padding: '0px' }}
-          >
-            <label className="label_title">
-              Password <span className="text-danger">*</span>
-            </label>
-            <input
-              required={data.required}
-              onChange={handleChange}
-              type="text"
-              className="form-control mb-2"
-              value={data.pwd}
-              name="pwd"
-              id="pwd"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
+              value={data.role}
+              name="role"
+              id="role"
             />
           </div>
           <div>
             <p>{data.message}</p>
           </div>
           {/* Button */}
-          <button className="btn btn-primary" type="submit">
+          <button className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer" type="submit">
             Save
           </button>
-          <button className="btn btn-warning" onClick={handleClose}>
+          <button className="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg transition-colors cursor-pointer ml-2" onClick={handleClose}>
             Cancel
           </button>
         </form>

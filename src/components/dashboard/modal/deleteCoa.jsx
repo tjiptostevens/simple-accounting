@@ -1,23 +1,31 @@
 import React, { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { DeleteCoaFn } from "../../custom/coaFn";
 
-const DeleteCoa = (props) => {
-  const [data, setData] = useState({
-    is_group: props.data.is_group === "0" ? false : true,
+const DeleteCoa = ({ show, close, detail }) => {
+  const queryClient = useQueryClient()
+  const [data] = useState({
+    is_group: detail.is_group === "0" ? false : true,
     required: true,
-    parent: props.data.parent,
-    number: props.data.number,
-    name: props.data.name,
-    type: props.data.type,
+    parent: detail.parent,
+    number: detail.number,
+    name: detail.name,
+    type: detail.type,
+    id: detail.id,
   });
-  const handleDelete = (e) => {
-    console.log(e);
+  const handleDelete = async (e) => {
+    e.preventDefault()
+    try {
+      await DeleteCoaFn({ id: detail.id })
+      queryClient.invalidateQueries({ queryKey: ['coa'] })
+      close()
+    } catch (err) {
+      console.log(err)
+    }
   };
-  const handleClose = (e) => {
-    e.preventDefault();
-    console.log(data);
-    setData({ ...data, required: !data.required });
-    props.handleClose(e);
-  };
+
+  if (!show) return null
+
   return (
     <>
       <div className="modal_title">
@@ -43,10 +51,10 @@ const DeleteCoa = (props) => {
         </p>
       </div>
       {/* Button */}
-      <button className="btn btn-danger" onClick={handleDelete}>
+      <button className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-sm rounded-lg transition-colors cursor-pointer" onClick={handleDelete}>
         Delete
       </button>
-      <button className="btn btn-primary" onClick={handleClose}>
+      <button className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer ml-2" onClick={(e) => { e.preventDefault(); close(); }}>
         Cancel
       </button>
     </>

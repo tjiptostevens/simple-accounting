@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-import useFetch from '../../useFetch'
-import urlLink from '../../config/urlLink'
 import { AddCustomerFn } from '../../custom/customerFn'
 import Modal from '../../site/modal'
 
@@ -31,41 +29,6 @@ const AddCustomer = (props) => {
       console.log(error)
       setVis({ ...vis, modal: true, msg: error.message })
     }
-    // const abortCtr = new AbortController()
-    // const headers = {
-    //   Accept: 'application/json',
-    //   'Content-Type': 'application/json',
-    //   'Access-Control-Allow-Origin': window.location.origin,
-    // }
-    // setTimeout(() => {
-    //   fetch(`${urlLink.url}addcustomer.php`, {
-    //     signal: abortCtr.signal,
-    //     method: 'POST',
-    //     body: JSON.stringify(data),
-    //     headers: headers,
-    //   })
-    //     .then((res) => res.json())
-    //     .then((res) => {
-    //       console.log(res)
-    //       setData({
-    //         required: true,
-    //         name: '',
-    //         mobile: '',
-    //         email: '',
-    //         address: '',
-    //         message: res.message,
-    //       })
-    //     })
-
-    //     // display an alert message for an error
-    //     .catch((err) => {
-    //       console.log(err)
-    //       setData({
-    //         ...data,
-    //         msg: 'Error Connection',
-    //       })
-    //     })
-    // }, 50)
   }
   return (
     <>
@@ -77,17 +40,17 @@ const AddCustomer = (props) => {
       <form onSubmit={handleSubmit} method="post">
         {/* Customer Name */}
         <div
-          className="row col-md-12"
+          className="flex flex-wrap w-full"
           style={{ margin: '0px', padding: '0px' }}
         >
           <label className="label_title">
-            Name <span className="text-danger">*</span>
+            Name <span className="text-red-500">*</span>
           </label>
           <input
             required={data.required}
             onChange={handleChange}
             type="text"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.name}
             name="name"
             id="name"
@@ -95,17 +58,17 @@ const AddCustomer = (props) => {
         </div>
         {/* Customer Mobile */}
         <div
-          className="row col-md-12"
+          className="flex flex-wrap w-full"
           style={{ margin: '0px', padding: '0px' }}
         >
           <label className="label_title">
-            Mobile <span className="text-danger">*</span>
+            Mobile <span className="text-red-500">*</span>
           </label>
           <input
             required={data.required}
             onChange={handleChange}
             type="number"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.mobile}
             placeholder="628123456789"
             name="mobile"
@@ -114,17 +77,17 @@ const AddCustomer = (props) => {
         </div>
         {/* Customer Email */}
         <div
-          className="row col-md-12"
+          className="flex flex-wrap w-full"
           style={{ margin: '0px', padding: '0px' }}
         >
           <label className="label_title">
-            E-Mail <span className="text-danger">*</span>
+            E-Mail <span className="text-red-500">*</span>
           </label>
           <input
             required={data.required}
             onChange={handleChange}
             type="email"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.email}
             name="email"
             id="email"
@@ -132,17 +95,17 @@ const AddCustomer = (props) => {
         </div>
         {/* Customer Address */}
         <div
-          className="row col-md-12 mb-5"
+          className="flex flex-wrap w-full mb-5"
           style={{ margin: '0px', padding: '0px' }}
         >
           <label className="label_title">
-            Address <span className="text-danger">*</span>
+            Address <span className="text-red-500">*</span>
           </label>
           <input
             required={data.required}
             onChange={handleChange}
             type="address"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.address}
             name="address"
             id="address"
@@ -152,11 +115,11 @@ const AddCustomer = (props) => {
           <p>{data.message}</p>
         </div>
         {/* Button */}
-        <button className="btn btn-primary" type="submit">
+        <button className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer" type="submit">
           Save
         </button>
         <button
-          className="btn btn-warning"
+          className="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg transition-colors cursor-pointer ml-2"
           onClick={(e) => props.handleClose(e)}
         >
           Cancel

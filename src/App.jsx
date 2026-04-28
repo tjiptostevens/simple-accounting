@@ -1,26 +1,52 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import React, { lazy, Suspense } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
-import './components/assets/css/scrollbar.css'
-import Rute from './components/config/routes'
-import Page404 from './components/site/Page404'
+import ProtectedRoute from './components/site/ProtectedRoute'
+import { useAuth } from './context/AuthContext'
+
+// Lazy-loaded top-level pages
+const Login = lazy(() => import('./components/site/login'))
+const Home  = lazy(() => import('./components/home'))
+
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center h-screen bg-[#161a1f]">
+    <span className="text-green-400 animate-pulse">Loading…</span>
+  </div>
+)
+
+function AppRoutes() {
+  const { session, loading } = useAuth()
+
+  if (loading) return <LoadingSpinner />
+
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        <Route
+          path="/"
+          element={session ? <Navigate to="/d" replace /> : <Login />}
+        />
+        <Route
+          path="/d/*"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
+  )
+}
 
 function App() {
   return (
     <Router>
-      <Routes>
-        {Rute.web.map((r) => (
-          <Route
-            exact
-            key={r.path}
-            path={`${r.path}/*`}
-            element={r.component}
-          />
-        ))}
-        <Route path={'/*'} element={<Page404 />} />
-      </Routes>
+      <AppRoutes />
     </Router>
   )
 }
 
 export default App
+

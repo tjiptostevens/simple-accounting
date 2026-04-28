@@ -1,6 +1,7 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useFetch from "../../useFetch";
+import { useQuery } from "@tanstack/react-query";
+import { reqCoa, reqPeriod } from "../../reqFetch";
 import useDate from "../../useDate";
 import Modal from "../../site/modal";
 import {
@@ -9,14 +10,19 @@ import {
   GetJournalLastFn,
 } from "../../custom/accFn";
 import { AddAssetsFn } from "../../custom/assetsFn";
+import { useAuth } from "../../../context/AuthContext";
 
 const AddAssets = (props) => {
+  const { loginUser, companyId: company } = useAuth();
   const { YY, MM, DD } = useDate();
   const navigate = useNavigate();
-  let a = JSON.parse(localStorage.getItem("period"));
-  let period = a.name;
 
-  const { data: coa } = useFetch("getcoa.php");
+  const { data: coa } = useQuery({ queryKey: ['coa'], queryFn: reqCoa });
+  const { data: periodList } = useQuery({ queryKey: ['period'], queryFn: reqPeriod });
+
+  const activePeriod = periodList?.find(p => p.status === '1') ?? periodList?.[0];
+  let period = activePeriod?.name ?? '';
+
   let coaFil = useMemo(
     () => coa?.filter((f) => f.type === "Assets" && f.is_group === "0"),
     [coa]
@@ -33,8 +39,8 @@ const AddAssets = (props) => {
     eco_value: "",
     description: "",
     posting_date: "",
-    company: localStorage.getItem("company"),
-    created_by: localStorage.getItem("loginUser"),
+    company: company,
+    created_by: loginUser,
     message: "",
   });
   const [vis, setVis] = useState({ modal: false });
@@ -57,11 +63,7 @@ const AddAssets = (props) => {
     }
   };
   const handleClose = (e) => {
-    // e.preventDefault()
     console.log(data);
-    // setData({ ...data, required: !data.required })
-    // navigate(0)
-    // window.location.reload()
     props.handleClose(e);
   };
   const handleSubmit = async (e) => {
@@ -79,8 +81,8 @@ const AddAssets = (props) => {
         ref: "Assets",
         ref_id: assets.id,
         posting_date: data.posting_date,
-        company: localStorage.getItem("company"),
-        created_by: localStorage.getItem("loginUser"),
+        company: company,
+        created_by: loginUser,
         total_debit: data.eco_value,
         total_credit: data.eco_value,
       };
@@ -91,7 +93,7 @@ const AddAssets = (props) => {
           acc: "511",
           debit: data.eco_value,
           posting_date: data.posting_date,
-          company: localStorage.getItem("company"),
+          company: company,
         },
         {
           idx: "2",
@@ -99,167 +101,115 @@ const AddAssets = (props) => {
           acc: data.acc,
           credit: data.eco_value,
           posting_date: data.posting_date,
-          company: localStorage.getItem("company"),
+          company: company,
         },
       ];
-      let res1 = await AddJournalFn(journal);
-      await AddJournalEntryFn(entry[0]);
-      await AddJournalEntryFn(entry[1]);
-      setVis({ modal: true, message: res.message });
-      setData({
-        required: true,
-        id: assets.id,
-        code: "",
-        name: "",
-        qty: "",
-        lifetime: "",
-        date: YY + "-" + MM + "-" + DD,
-        acc: "",
-        init_value: "",
-        eco_value: "",
-        description: "",
-        company: localStorage.getItem("company"),
-        created_by: localStorage.getItem("loginUser"),
-        message: res.message,
-      });
+      let resJournal = await AddJournalFn(journal);
+      let resEntry1 = await AddJournalEntryFn(entry[0]);
+      let resEntry2 = await AddJournalEntryFn(entry[1]);
+      console.log(res, resJournal, resEntry1, resEntry2);
+      setVis({ ...vis, modal: true, msg: "Assets added successfully" });
     } catch (error) {
-      setVis({ modal: false, message: error.message });
-      setData({
-        ...data,
-        id: assets.id,
-        msg: error.message,
-      });
+      console.log(error);
+      setVis({ ...vis, modal: true, msg: error.message });
     }
   };
   return (
     <>
-      {/* {JSON.stringify(data)} <br /> */}
-      {/* {console.log(props)} */}
-      {/* {JSON.stringify(coaFil)} */}
       <Modal
         modal={vis.modal}
-        title=""
-        element={
-          <>
-            <p>{vis.message}</p>
-          </>
-        }
-        handleClose={() => setVis({ modal: false })}
+        title={""}
+        element={<>{vis.msg}</>}
+        handleClose={(e) => {
+          setVis({ modal: false });
+          navigate(0);
+        }}
       />
       <form onSubmit={handleSubmit} method="post">
-        <div className="w-100" style={{ height: "25px" }}></div>
-        <p>
-          <b>Assets details</b>
-        </p>
-        <hr />
-        <div
-          className="row col-md-12"
-          style={{ margin: "0px", padding: "0px" }}
-        >
-          {/* Customer Code */}
-          <div
-            className="row col-md-4"
-            style={{ margin: "0px", padding: "0px" }}
-          >
+        <div className="flex flex-wrap w-full" style={{ margin: "0px", padding: "0px" }}>
+          {/* Asset Code */}
+          <div className="flex flex-wrap md:w-4/12 w-full" style={{ margin: "0px", padding: "0px" }}>
             <label className="label_title">
-              Code <span className="text-danger">*</span>
+              Code <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="text"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.code}
               name="code"
               id="code"
             />
           </div>
           {/* Customer Name */}
-          <div
-            className="row col-md-4"
-            style={{ margin: "0px", padding: "0px" }}
-          >
+          <div className="flex flex-wrap md:w-4/12 w-full" style={{ margin: "0px", padding: "0px" }}>
             <label className="label_title">
-              Name <span className="text-danger">*</span>
+              Name <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="text"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.name}
               name="name"
               id="name"
             />
           </div>
           {/* Purchase Date */}
-          <div
-            className="row col-md-4"
-            style={{ margin: "0px", padding: "0px" }}
-          >
+          <div className="flex flex-wrap md:w-4/12 w-full" style={{ margin: "0px", padding: "0px" }}>
             <label className="label_title">
-              Purchase Date<span className="text-danger">*</span>
+              Purchase Date<span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="date"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.date}
               name="date"
               id="date"
             />
           </div>
         </div>
-        <div
-          className="row col-md-12"
-          style={{ margin: "0px", padding: "0px" }}
-        >
+        <div className="flex flex-wrap w-full" style={{ margin: "0px", padding: "0px" }}>
           {/* Customer Quantity */}
-          <div
-            className="row col-md-2"
-            style={{ margin: "0px", padding: "0px" }}
-          >
+          <div className="flex flex-wrap md:w-2/12 w-full" style={{ margin: "0px", padding: "0px" }}>
             <label className="label_title">
-              Quantity <span className="text-danger">*</span>
+              Quantity <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               onBlur={handleChange}
               type="tel"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.qty}
               name="qty"
               id="qty"
             />
           </div>
           {/* Customer lifetime */}
-          <div
-            className="row col-md-2"
-            style={{ margin: "0px", padding: "0px" }}
-          >
+          <div className="flex flex-wrap md:w-2/12 w-full" style={{ margin: "0px", padding: "0px" }}>
             <label className="label_title">
-              Lifetime <span className="text-danger">*</span>
+              Lifetime <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               onBlur={handleChange}
               type="number"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.lifetime}
               name="lifetime"
               id="lifetime"
             />
           </div>
           {/* Initial Value */}
-          <div
-            className="row col-md-4"
-            style={{ margin: "0px", padding: "0px" }}
-          >
+          <div className="flex flex-wrap md:w-4/12 w-full" style={{ margin: "0px", padding: "0px" }}>
             <label className="label_title">
-              Initial Value <span className="text-danger">*</span>
+              Initial Value <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
@@ -267,23 +217,20 @@ const AddAssets = (props) => {
               onChange={handleChange}
               onBlur={handleChange}
               type="tel"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.init_value}
               name="init_value"
               id="init_value"
             />
           </div>
-          {/* Customer Date */}
-          <div
-            className="row col-md-4"
-            style={{ margin: "0px", padding: "0px" }}
-          >
+          {/* Economic Value */}
+          <div className="flex flex-wrap md:w-4/12 w-full" style={{ margin: "0px", padding: "0px" }}>
             <label className="label_title">Economic Value</label>
             <input
               onChange={handleChange}
               readOnly={true}
               type="number"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.eco_value}
               name="eco_value"
               id="eco_value"
@@ -291,31 +238,24 @@ const AddAssets = (props) => {
           </div>
         </div>
 
-        <div className="w-100" style={{ height: "25px" }}></div>
+        <div className="w-full" style={{ height: "25px" }}></div>
         <p>
           <b>Accounting details</b>
         </p>
         <hr />
-        <div
-          className="row col-md-12"
-          style={{ margin: "0px", padding: "0px" }}
-        >
-          <div
-            className="row col-md-6"
-            style={{ margin: "0px", padding: "0px" }}
-          >
+        <div className="flex flex-wrap w-full" style={{ margin: "0px", padding: "0px" }}>
+          <div className="flex flex-wrap md:w-1/2 w-full" style={{ margin: "0px", padding: "0px" }}>
             <label className="label_title">
-              Account <span className="text-danger">*</span>
+              Account <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               list="coa"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               name="acc"
               value={data.acc}
               onChange={handleChange}
             />
-
             <datalist id="coa">
               {coaFil &&
                 coaFil.map((d, key) => (
@@ -325,32 +265,26 @@ const AddAssets = (props) => {
                 ))}
             </datalist>
           </div>
-          <div
-            className="row col-md-6"
-            style={{ margin: "0px", padding: "0px" }}
-          >
+          <div className="flex flex-wrap md:w-1/2 w-full" style={{ margin: "0px", padding: "0px" }}>
             <label className="label_title">
-              Posting Date <span className="text-danger">*</span>
+              Posting Date <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               name="posting_date"
               value={data.posting_date}
               onChange={handleChange}
             />
           </div>
         </div>
-        {/* Customer Address */}
-        <div
-          className="row col-md-12 mb-5"
-          style={{ margin: "0px", padding: "0px" }}
-        >
+        {/* Description */}
+        <div className="flex flex-wrap w-full mb-5" style={{ margin: "0px", padding: "0px" }}>
           <label className="label_title">Description</label>
           <input
             onChange={handleChange}
             type="text"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.description}
             name="description"
             id="description"
@@ -360,10 +294,10 @@ const AddAssets = (props) => {
           <p>{data.message}</p>
         </div>
         {/* Button */}
-        <button className="btn btn-primary" type="submit">
+        <button className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer" type="submit">
           Save
         </button>
-        <button className="btn btn-warning" onClick={handleClose}>
+        <button className="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg transition-colors cursor-pointer ml-2" onClick={handleClose}>
           Cancel
         </button>
       </form>
