@@ -1,60 +1,75 @@
 .form-inline {
-    flex: 1;
-    justify-content: flex-end !important;
     display: flex;
-    flex-flow: row wrap;
     align-items: center;
+    gap: 1.5rem;
 }
 
 .search-bar {
     position: relative;
-    flex-wrap: wrap;
-    align-items: stretch;
-    flex: 1;
-    max-width: 300px;
-    margin: 0 var(--margin-md);
+    display: flex;
+    align-items: center;
     background-color: var(--color-app-surface);
+    border: 1px solid var(--color-app-border);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 1rem;
+    width: 100%;
+    max-width: 300px;
+    transition: all 0.2s;
+}
+
+.search-bar:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .search-bar .search-icon {
-    position: absolute;
-    margin-left: 12px;
-    display: flex;
-    align-items: center;
-    height: 100%;
-}
-
-.bi {
-    color: var(--color-muted);
+    color: var(--color-app-muted);
+    margin-right: 0.75rem;
 }
 
 .__icon {
-    padding: 0px;
-    margin: 0px 15px;
+    color: var(--color-app-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.__icon:hover {
+    color: var(--color-primary);
 }
 
 .__help {
-    padding: 0px 15px;
-    margin: 0px;
-    color: var(--color-muted);
+    padding-left: 1rem;
     border-left: 1px solid var(--color-app-border);
 }
 
 .__avatar {
-    border-radius: 100%;
-    width: 30px;
-    height: 30px;
-    background-color: var(--color-muted);
-    transition: all 1s;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid var(--color-app-border);
 }
 
 .__avatar:hover {
-    border-radius: 50%;
-    background-color: var(--color-primary);
-    transition: all 1s;
+    transform: scale(1.05);
+}
+
+.nav-logout {
+    color: #ef4444;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .nav-logout:hover {
-    font-weight: 600;
-    transition: all 1s;
+    color: #dc2626;
+    text-decoration: underline;
 }
