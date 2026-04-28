@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   reqCoaList,
   reqEquityChange,
@@ -10,15 +10,15 @@ import {
 const EquityChange = () => {
   const [vis, setVis] = useState({ modal: false });
   const [data, setData] = useState({ period: "" });
-  const { data: period } = useQuery("period", reqPeriod);
-  const { data: journalEntry } = useQuery("journalEntry", reqJournalEntry);
-  const { data: equityChange } = useQuery("equityChange", reqEquityChange);
+  const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod });
+  const { data: journalEntry } = useQuery({ queryKey: ['journalEntry'], queryFn: reqJournalEntry });
+  const { data: equityChange } = useQuery({ queryKey: ['equityChange'], queryFn: reqEquityChange });
   const {
     data: coaList,
     error,
     isError,
     isLoading,
-  } = useQuery("coaList", reqCoaList);
+  } = useQuery({ queryKey: ['coaList'], queryFn: reqCoaList });
 
   // create a new COA
   let newCoa = [];
@@ -105,7 +105,7 @@ const EquityChange = () => {
     <>
       {/* Component Title */}
       <div
-        className="w-100"
+        className="w-full"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
         <div className=" __content_title">Equity Change</div>
@@ -116,7 +116,7 @@ const EquityChange = () => {
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <input
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               type="search"
               name="search"
               placeholder="Search by text"
@@ -124,14 +124,14 @@ const EquityChange = () => {
             />
           </div> */}
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: "fit-content" }}
           >
             <i className="bi bi-arrow-right-square"></i>
           </button>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: "fit-content" }}
           >
@@ -140,7 +140,7 @@ const EquityChange = () => {
         </div>
       </div>
       <hr style={{ margin: "0" }} />
-      <div className="w-100" style={{ height: "25px" }}></div>
+      <div className="w-full" style={{ height: "25px" }}></div>
       <div className="row col-md-12" style={{ paddingLeft: "25px" }}>
         <div
           className="row col-md-12"

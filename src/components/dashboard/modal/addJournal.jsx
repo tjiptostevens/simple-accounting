@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import useFetch from "../../useFetch";
-import urlLink from "../../config/urlLink";
 import useDate from "../../useDate";
 import Entry from "./entry";
 import {
@@ -9,19 +7,20 @@ import {
   GetJournalLastFn,
 } from "../../custom/accFn";
 import Modal from "../../site/modal";
-import { useQuery } from "react-query";
-import { reqCoa, reqCustomer } from "../../reqFetch";
+import { useQuery } from "@tanstack/react-query";
+import { reqCoa, reqCustomer, reqPeriod } from "../../reqFetch";
+import { useAuth } from "../../../context/AuthContext";
 
 const AddJournal = (props) => {
-  const loginUser = localStorage.getItem("loginUser");
-  const company = localStorage.getItem("company");
+  const { loginUser, companyId: company } = useAuth();
   const [vis, setVis] = useState({ modal: false });
-  const { data: customer } = useQuery("customer", reqCustomer);
-  // const { data: coa } = useFetch('getcoa.php')
-  const { data: coa, error, isError, isLoading } = useQuery("coa", reqCoa);
+  const { data: customer } = useQuery({ queryKey: ['customer'], queryFn: reqCustomer });
+  const { data: coa, error, isError, isLoading } = useQuery({ queryKey: ['coa'], queryFn: reqCoa });
+  const { data: periodList } = useQuery({ queryKey: ['period'], queryFn: reqPeriod });
   const { YY, DD, MM, ss } = useDate();
-  let a = JSON.parse(localStorage.getItem("period"));
-  let period = a.name;
+
+  const activePeriod = periodList?.find(p => p.status === '1') ?? periodList?.[0];
+  let period = activePeriod?.name ?? '';
 
   const [data, setData] = useState({
     type: "Jurnal Umum",
@@ -33,17 +32,15 @@ const AddJournal = (props) => {
     customer: "",
     last: "0000",
     now: `${YY}-${MM}-${DD}`,
-    entry: [
-      // { idx: "1", acc: "", party_type: "", party: "", debit: "", credit: "" },
-    ],
+    entry: [],
     month: MM,
     minute: ss,
     posting_date: `${YY}-${MM}-${DD}`,
     opening: false,
     pay_to_recd_from: "",
     user_remark: "",
-    created_by: localStorage.getItem("loginUser"),
-    company: localStorage.getItem("company"),
+    created_by: loginUser,
+    company: company,
   });
 
   useEffect(() => {
@@ -60,12 +57,10 @@ const AddJournal = (props) => {
         }));
       }
     }, 0);
-    // return () => abortCtr.abort()
     // eslint-disable-next-line
   }, [data.name]);
 
   const handleChange = async (e) => {
-    // console.log(`${[e.target.name]}`, e.target.value)
     let nam = e.target.name;
     let val = e.target.value;
     if (nam === "type") {
@@ -77,24 +72,8 @@ const AddJournal = (props) => {
             type: "Penjualan Tracking Kredit",
             type_number: 1,
             entry: [
-              {
-                idx: "1",
-                acc: "113",
-                party_type: "",
-                party: "",
-                debit: 0,
-                credit: "",
-                disable: true,
-              },
-              {
-                idx: "2",
-                acc: "410",
-                party_type: "",
-                party: "",
-                debit: "",
-                credit: 0,
-                disable: true,
-              },
+              { idx: "1", acc: "113", party_type: "", party: "", debit: 0, credit: "", disable: true },
+              { idx: "2", acc: "410", party_type: "", party: "", debit: "", credit: 0, disable: true },
             ],
           });
           break;
@@ -105,24 +84,8 @@ const AddJournal = (props) => {
             type: "Penjualan Container Kredit",
             type_number: 2,
             entry: [
-              {
-                idx: "1",
-                acc: "113",
-                party_type: "",
-                party: "",
-                debit: 0,
-                credit: "",
-                disable: true,
-              },
-              {
-                idx: "2",
-                acc: "420",
-                party_type: "",
-                party: "",
-                debit: "",
-                credit: 0,
-                disable: true,
-              },
+              { idx: "1", acc: "113", party_type: "", party: "", debit: 0, credit: "", disable: true },
+              { idx: "2", acc: "420", party_type: "", party: "", debit: "", credit: 0, disable: true },
             ],
           });
           break;
@@ -133,24 +96,8 @@ const AddJournal = (props) => {
             type: "Pembelian Kredit",
             type_number: 3,
             entry: [
-              {
-                idx: "1",
-                acc: "",
-                party_type: "",
-                party: "",
-                debit: 0,
-                credit: "",
-                disable: false,
-              },
-              {
-                idx: "2",
-                acc: "211",
-                party_type: "",
-                party: "",
-                debit: "",
-                credit: 0,
-                disable: true,
-              },
+              { idx: "1", acc: "", party_type: "", party: "", debit: 0, credit: "", disable: false },
+              { idx: "2", acc: "211", party_type: "", party: "", debit: "", credit: 0, disable: true },
             ],
           });
           break;
@@ -161,24 +108,8 @@ const AddJournal = (props) => {
             type: "Penerimaan Kas",
             type_number: 4,
             entry: [
-              {
-                idx: "1",
-                acc: "111",
-                party_type: "",
-                party: "",
-                debit: 0,
-                credit: "",
-                disable: false,
-              },
-              {
-                idx: "2",
-                acc: "",
-                party_type: "",
-                party: "",
-                debit: "",
-                credit: 0,
-                disable: false,
-              },
+              { idx: "1", acc: "111", party_type: "", party: "", debit: 0, credit: "", disable: false },
+              { idx: "2", acc: "", party_type: "", party: "", debit: "", credit: 0, disable: false },
             ],
           });
           break;
@@ -189,24 +120,8 @@ const AddJournal = (props) => {
             type: "Pembayaran Kas",
             type_number: 5,
             entry: [
-              {
-                idx: "1",
-                acc: "",
-                party_type: "",
-                party: "",
-                debit: 0,
-                credit: "",
-                disable: false,
-              },
-              {
-                idx: "2",
-                acc: "111",
-                party_type: "",
-                party: "",
-                debit: "",
-                credit: 0,
-                disable: false,
-              },
+              { idx: "1", acc: "", party_type: "", party: "", debit: 0, credit: "", disable: false },
+              { idx: "2", acc: "111", party_type: "", party: "", debit: "", credit: 0, disable: false },
             ],
           });
           break;
@@ -219,13 +134,6 @@ const AddJournal = (props) => {
             entry: [],
           });
           break;
-
-        // default:
-        //   setData({
-        //     ...data,
-        //     [e.target.name]: e.target.value,
-        //   })
-        //   break
       }
     } else {
       setData({
@@ -290,13 +198,12 @@ const AddJournal = (props) => {
         pay_to_recd_from: "",
         user_remark: "",
         customer: "",
-        created_by: localStorage.getItem("loginUser"),
-        company: localStorage.getItem("company"),
+        created_by: loginUser,
+        company: company,
         message: res.message,
       });
       setVis({ ...vis, modal: true, msg: res.message });
     } catch (error) {
-      // display an alert message for an error
       console.log(error);
       setData({
         ...data,
@@ -420,7 +327,7 @@ const AddJournal = (props) => {
         {data.opening ? (
           <button
             style={{ padding: "0 5px", minWidth: "unset" }}
-            className="btn btn-primary btn-sm"
+            className="px-3 py-1 bg-green-600 hover:bg-green-500 text-white text-xs rounded transition-colors cursor-pointer"
             onClick={() =>
               setData({
                 ...data,
@@ -437,30 +344,28 @@ const AddJournal = (props) => {
         ) : (
           <button
             style={{ padding: "0 5px", minWidth: "unset" }}
-            className="btn btn-primary btn-sm"
+            className="px-3 py-1 bg-green-600 hover:bg-green-500 text-white text-xs rounded transition-colors cursor-pointer"
             onClick={handleOpening}
           >
             Add Opening Entries
           </button>
         )}
       </div>
-      {/* {JSON.stringify(data)} <br /> */}
-      {/* {JSON.stringify(coa)} */}
       <form onSubmit={handleSubmit} method="post">
         <div
-          className="row col-md-12"
+          className="flex flex-wrap w-full"
           style={{ margin: "0px", padding: "0px" }}
         >
           {/* Journal Type */}
           <div
-            className="row col-md-12 mb-2"
+            className="flex flex-wrap w-full mb-2"
             style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">Journal Type :</label>
             <select
               required={data.required}
               disabled={data.opening}
-              className="form-select"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               name="type"
               value={data.type_number}
               onChange={handleChange}
@@ -479,18 +384,18 @@ const AddJournal = (props) => {
           </div>
           {/* Numbering */}
           <div
-            className="row col-md-6 mb-2"
+            className="flex flex-wrap md:w-1/2 w-full mb-2"
             style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">
-              Number <span className="text-danger">*</span>
+              Number <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               disabled={true}
               onChange={handleChange}
               type="text"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.name}
               name="name"
               id="name"
@@ -498,56 +403,54 @@ const AddJournal = (props) => {
           </div>
           {/* Posting Date */}
           <div
-            className="row col-md-6 mb-2"
+            className="flex flex-wrap md:w-1/2 w-full mb-2"
             style={{ margin: "0px", padding: "0px" }}
           >
             <label className="label_title">
-              Posting Date <span className="text-danger">*</span>
+              Posting Date <span className="text-red-500">*</span>
             </label>
             <input
               required={data.required}
               onChange={handleChange}
               type="date"
-              className="form-control mb-2"
+              className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
               value={data.posting_date}
               name="posting_date"
               id="posting_date"
             />
           </div>
         </div>
-        {/* Customer Mobile */}
+        {/* Title */}
         <div
-          className="row col-md-12 mb-2"
+          className="flex flex-wrap w-full mb-2"
           style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">
-            Title <span className="text-danger">*</span>
+            Title <span className="text-red-500">*</span>
           </label>
           <input
             required={data.required}
             onChange={handleChange}
             type="text"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.title}
             name="title"
             id="title"
           />
         </div>
         <div
-          className="row col-md-12 mb-2"
+          className="flex flex-wrap w-full mb-2"
           style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">Customer</label>
           <input
             list="customer"
-            className="form-control mb-2"
-            style={{ padding: "5px 10px", border: "none" }}
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
+            style={{ padding: "5px 10px" }}
             type="text"
             name="customer"
             value={
               data.customer.split(" - ")[1]
-              // &&
-              // customer?.filter((f) => f.id === data.customer).map((e) => e.name)
             }
             onChange={handleChange}
           />
@@ -564,52 +467,49 @@ const AddJournal = (props) => {
         </div>
         {/* Input data Accounting */}
         <div
-          className="row col-md-12 mb-2"
+          className="flex flex-wrap w-full mb-2"
           style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">Accounting Entries</label>
-          {/* <small>{JSON.stringify(data)}</small> */}
-          {/* <hr /> */}
-          {/* <small>{JSON.stringify(lists)}</small> */}
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full"
             style={{
               margin: "0px",
               padding: "5px 0 0 0",
             }}
           >
             <div
-              className="col-md-1"
+              className="md:w-1/12"
               style={{ padding: "5px 10px", border: "1px solid #b3b3b3" }}
             >
               No.
             </div>
             <div
-              className="col-md-3"
+              className="md:w-3/12"
               style={{ padding: "5px 10px", border: "1px solid #b3b3b3" }}
             >
               Account
             </div>
             <div
-              className="col-md-2"
+              className="md:w-2/12"
               style={{ padding: "5px 10px", border: "1px solid #b3b3b3" }}
             >
               Party Type
             </div>
             <div
-              className="col-md-2"
+              className="md:w-2/12"
               style={{ padding: "5px 10px", border: "1px solid #b3b3b3" }}
             >
               Party
             </div>
             <div
-              className="col-md-2"
+              className="md:w-2/12"
               style={{ padding: "5px 10px", border: "1px solid #b3b3b3" }}
             >
               Debit
             </div>
             <div
-              className="col-md-2"
+              className="md:w-2/12"
               style={{ padding: "5px 10px", border: "1px solid #b3b3b3" }}
             >
               Credit
@@ -629,19 +529,19 @@ const AddJournal = (props) => {
             ))}
 
           <div
-            className="row col-md-12"
+            className="flex flex-wrap w-full"
             style={{
               margin: "0px",
               padding: "0px",
             }}
           >
             <div
-              className="col-md-4"
+              className="md:w-4/12"
               style={{ margin: "0px", padding: "5px 0" }}
             >
               <button
                 style={{ padding: "0 5px", minWidth: "unset" }}
-                className="btn btn-primary btn-sm"
+                className="px-3 py-1 bg-green-600 hover:bg-green-500 text-white text-xs rounded transition-colors cursor-pointer"
                 onClick={handleAddRow}
               >
                 Add Row
@@ -650,7 +550,7 @@ const AddJournal = (props) => {
             {data.entry.length > 0 && (
               <>
                 <div
-                  className="col-md-4"
+                  className="md:w-4/12"
                   style={{
                     padding: "5px 10px",
                     textAlign: "right",
@@ -659,7 +559,7 @@ const AddJournal = (props) => {
                   Total
                 </div>
                 <div
-                  className="col-md-2"
+                  className="md:w-2/12"
                   style={{
                     padding: "5px 10px",
                     border: "1px solid #b3b3b3",
@@ -669,7 +569,7 @@ const AddJournal = (props) => {
                   {TotalDebit()}
                 </div>
                 <div
-                  className="col-md-2"
+                  className="md:w-2/12"
                   style={{
                     padding: "5px 10px",
                     border: "1px solid #b3b3b3",
@@ -685,14 +585,14 @@ const AddJournal = (props) => {
 
         {/* Pay to / Received By */}
         <div
-          className="row col-md-12 mb-2"
+          className="flex flex-wrap w-full mb-2"
           style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">Pay To / Received By :</label>
           <input
             onChange={handleChange}
             type="text"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.pay_to_recd_from}
             name="pay_to_recd_from"
             id="pay_to_recd_from"
@@ -700,28 +600,25 @@ const AddJournal = (props) => {
         </div>
         {/* User Remark */}
         <div
-          className="row col-md-12 mb-5"
+          className="flex flex-wrap w-full mb-5"
           style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">User Remark</label>
           <textarea
             name="user_remark"
             onChange={handleChange}
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.user_remark}
           ></textarea>
         </div>
-        {/* <div>
-          <p>{data.message}</p>
-        </div> */}
         {/* Button */}
         {data.total_credit === data.total_debit ? (
-          <button className="btn btn-primary" type="submit">
+          <button className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer" type="submit">
             Save
           </button>
         ) : (
           <button
-            className="btn btn-primary"
+            className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={(e) => {
               e.preventDefault();
               alert("Journal not balanced.");
@@ -730,7 +627,7 @@ const AddJournal = (props) => {
             Save
           </button>
         )}
-        <button className="btn btn-warning" onClick={handleClose}>
+        <button className="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg transition-colors cursor-pointer ml-2" onClick={handleClose}>
           Cancel
         </button>
       </form>

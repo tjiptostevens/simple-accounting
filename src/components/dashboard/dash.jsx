@@ -1,17 +1,18 @@
 import React, { useMemo } from "react";
-import { useQuery } from "react-query";
-import { reqCoaList, reqJournalEntry } from "../reqFetch";
+import { useQuery } from "@tanstack/react-query";
+import { reqCoaList, reqJournalEntry, reqPeriod } from "../reqFetch";
 
 const Dash = () => {
-  let periodStorage = localStorage.getItem("period");
-  let period = JSON.parse(periodStorage);
-  const { data: journalEntry } = useQuery("journalEntry", reqJournalEntry);
+  const { data: journalEntry } = useQuery({ queryKey: ['journalEntry'], queryFn: reqJournalEntry });
   const {
     data: coaList,
     error,
     isError,
     isLoading,
-  } = useQuery("coaList", reqCoaList);
+  } = useQuery({ queryKey: ['coaList'], queryFn: reqCoaList });
+  const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod });
+
+  const activePeriod = period?.find(p => p.status === '1') ?? period?.[0];
 
   // create a new COA
   let newCoa = [];
@@ -37,8 +38,8 @@ const Dash = () => {
       ?.sort((a, b) => (a.posting_date > b.posting_date ? 1 : -1))
       .filter(
         (d) =>
-          new Date(d.posting_date) >= new Date(period.start) &&
-          new Date(d.posting_date) <= new Date(period.end)
+          new Date(d.posting_date) >= new Date(activePeriod?.start) &&
+          new Date(d.posting_date) <= new Date(activePeriod?.end)
       );
   }, [journalEntry, period]);
   // new COA by filtered Journal Entry
@@ -47,7 +48,6 @@ const Dash = () => {
       try {
         let i = newCoa.findIndex((d) => d.number === e.acc);
         let d, c;
-        // console.log(e.acc, e.debit, parseInt(e.debit))
         d = parseInt(e.debit) + parseInt(newCoa[i].debit);
         c = parseInt(e.credit) + parseInt(newCoa[i].credit);
         let t = 0;
@@ -115,11 +115,8 @@ const Dash = () => {
   }
   return (
     <>
-      {/* Component Title */}
-      {/* {console.log(newCoa)} */}
-
       <div
-        className="w-100"
+        className="w-full"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
         <div className=" __content_title">Dashboard</div>
@@ -132,7 +129,7 @@ const Dash = () => {
               visibility: "hidden",
             }}
           >
-            <button className="btn btn-primary m-1">
+            <button className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer">
               <i className="bi bi-plus"></i>
               New
             </button>
@@ -141,22 +138,22 @@ const Dash = () => {
       </div>
       <hr style={{ margin: "0" }} />
       <div
-        className="row"
+        className="flex flex-wrap"
         style={{
           margin: "15px 0",
           padding: "0",
         }}
       >
         <div
-          className="col-md-3 col-6"
+          className="md:w-1/4 w-1/2"
           style={{ margin: "0", padding: "5px", borderRadius: "5px" }}
         >
-          <div className="card bg-dark">
-            <div className="card-header" style={{ color: "white" }}>
+          <div className="bg-[#212529] rounded">
+            <div className="p-3 border-b border-gray-700" style={{ color: "white" }}>
               <b>CASH</b>
             </div>
             <div
-              className="card-body"
+              className="p-3"
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -177,15 +174,15 @@ const Dash = () => {
           </div>
         </div>
         <div
-          className="col-md-3 col-6"
+          className="md:w-1/4 w-1/2"
           style={{ margin: "0", padding: "5px", borderRadius: "5px" }}
         >
-          <div className="card bg-dark">
-            <div className="card-header" style={{ color: "white" }}>
+          <div className="bg-[#212529] rounded">
+            <div className="p-3 border-b border-gray-700" style={{ color: "white" }}>
               <b>BANK</b>
             </div>
             <div
-              className="card-body"
+              className="p-3"
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -206,15 +203,15 @@ const Dash = () => {
           </div>
         </div>
         <div
-          className="col-md-3 col-6"
+          className="md:w-1/4 w-1/2"
           style={{ margin: "0", padding: "5px", borderRadius: "5px" }}
         >
-          <div className="card bg-dark">
-            <div className="card-header" style={{ color: "white" }}>
+          <div className="bg-[#212529] rounded">
+            <div className="p-3 border-b border-gray-700" style={{ color: "white" }}>
               <b>RECEIVABLE</b>
             </div>
             <div
-              className="card-body"
+              className="p-3"
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -235,15 +232,15 @@ const Dash = () => {
           </div>
         </div>
         <div
-          className="col-md-3 col-6"
+          className="md:w-1/4 w-1/2"
           style={{ margin: "0", padding: "5px", borderRadius: "5px" }}
         >
-          <div className="card bg-dark">
-            <div className="card-header" style={{ color: "white" }}>
+          <div className="bg-[#212529] rounded">
+            <div className="p-3 border-b border-gray-700" style={{ color: "white" }}>
               <b>PAYABLE</b>
             </div>
             <div
-              className="card-body"
+              className="p-3"
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -267,14 +264,14 @@ const Dash = () => {
 
       {/* Balance */}
       <div
-        className="row"
+        className="flex flex-wrap"
         style={{
           margin: "15px 0",
           padding: "5px",
         }}
       >
         <div
-          className="row"
+          className="flex flex-wrap"
           style={{
             margin: "0",
             padding: "25px 15px",
@@ -284,7 +281,7 @@ const Dash = () => {
             background: "#212529",
           }}
         >
-          <div className="col-md-3">
+          <div className="md:w-1/4">
             <div>
               <p>Total Assets</p>
               <h5
@@ -297,7 +294,7 @@ const Dash = () => {
             </div>
           </div>
           <div
-            className="col-md-1"
+            className="md:w-12"
             style={{
               display: "flex",
               flexDirection: "column",
@@ -322,7 +319,7 @@ const Dash = () => {
               <b>*</b>
             </div>
           </div>
-          <div className="col-md-3">
+          <div className="md:w-1/4">
             <div>
               <p>Total Liability</p>
               <h5
@@ -338,7 +335,7 @@ const Dash = () => {
             </div>
           </div>
           <div
-            className="col-md-1"
+            className="md:w-12"
             style={{
               display: "flex",
               flexDirection: "column",
@@ -363,7 +360,7 @@ const Dash = () => {
               <b>*</b>
             </div>
           </div>
-          <div className="col-md-3">
+          <div className="md:w-1/4">
             <div>
               <p>Total Equity</p>
               <h5
@@ -381,14 +378,14 @@ const Dash = () => {
 
       {/* Profit and Loss */}
       <div
-        className="row"
+        className="flex flex-wrap"
         style={{
           margin: "15px 0",
           padding: "5px",
         }}
       >
         <div
-          className="row"
+          className="flex flex-wrap"
           style={{
             margin: "0",
             padding: "25px 15px",
@@ -398,7 +395,7 @@ const Dash = () => {
             background: "#212529",
           }}
         >
-          <div className="col-md-3">
+          <div className="md:w-1/4">
             <div>
               <p>Total Income This Period</p>
               <h5
@@ -411,7 +408,7 @@ const Dash = () => {
             </div>
           </div>
           <div
-            className="col-md-1"
+            className="md:w-12"
             style={{
               display: "flex",
               flexDirection: "column",
@@ -436,7 +433,7 @@ const Dash = () => {
               <b>-</b>
             </div>
           </div>
-          <div className="col-md-3">
+          <div className="md:w-1/4">
             <div>
               <p>Total Expense This Period</p>
               <h5
@@ -449,7 +446,7 @@ const Dash = () => {
             </div>
           </div>
           <div
-            className="col-md-1"
+            className="md:w-12"
             style={{
               display: "flex",
               flexDirection: "column",
@@ -474,7 +471,7 @@ const Dash = () => {
               <b>=</b>
             </div>
           </div>
-          <div className="col-md-3">
+          <div className="md:w-1/4">
             <div>
               <p>Profit This Period</p>
               <h5
@@ -495,14 +492,6 @@ const Dash = () => {
           </div>
         </div>
       </div>
-
-      {/* coa  */}
-      {/* <div className="w-100">
-        <div className="col-md-6">{JSON.stringify(newCoa)}</div>
-        <div className="col-md-6">{JSON.stringify(coa)}</div>
-      </div> */}
-      {/* <div className="w-100">{newCoa && <CoaLists list={newCoa} />}</div> */}
-      {/* <div className="w-100">{coa && <CoaLists list={coa} />}</div> */}
     </>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import urlLink from "../../config/urlLink";
 import { AddPeriodFn } from "../../custom/periodFn";
 import Modal from "../../site/modal";
 
@@ -51,17 +50,17 @@ const AddPeriod = (props) => {
       <form onSubmit={handleSubmit} method="post">
         {/* Name */}
         <div
-          className="row col-md-12"
+          className="flex flex-wrap w-full"
           style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">
-            Name <span className="text-danger">*</span>
+            Name <span className="text-red-500">*</span>
           </label>
           <input
             required={data.required}
             onChange={handleChange}
             type="text"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.name}
             name="name"
             id="name"
@@ -69,17 +68,17 @@ const AddPeriod = (props) => {
         </div>
         {/* Description */}
         <div
-          className="row col-md-12"
+          className="flex flex-wrap w-full"
           style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">
-            Description <span className="text-danger">*</span>
+            Description <span className="text-red-500">*</span>
           </label>
           <input
             required={data.required}
             onChange={handleChange}
             type="text"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.description}
             name="description"
             id="description"
@@ -87,17 +86,17 @@ const AddPeriod = (props) => {
         </div>
         {/* start */}
         <div
-          className="row col-md-12"
+          className="flex flex-wrap w-full"
           style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">
-            Start Date <span className="text-danger">*</span>
+            Start Date <span className="text-red-500">*</span>
           </label>
           <input
             required={data.required}
             onChange={handleChange}
             type="date"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.start}
             name="start"
             id="start"
@@ -105,17 +104,17 @@ const AddPeriod = (props) => {
         </div>
         {/* end */}
         <div
-          className="row col-md-12"
+          className="flex flex-wrap w-full"
           style={{ margin: "0px", padding: "0px" }}
         >
           <label className="label_title">
-            End Date <span className="text-danger">*</span>
+            End Date <span className="text-red-500">*</span>
           </label>
           <input
             required={data.required}
             onChange={handleChange}
             type="date"
-            className="form-control mb-2"
+            className="w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500 mb-2"
             value={data.end}
             name="end"
             id="end"
@@ -125,11 +124,11 @@ const AddPeriod = (props) => {
           <p>{data.message}</p>
         </div>
         {/* Button */}
-        <button className="btn btn-primary" type="submit">
+        <button className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer" type="submit">
           Save
         </button>
         <button
-          className="btn btn-warning"
+          className="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg transition-colors cursor-pointer ml-2"
           onClick={(e) => props.handleClose(e)}
         >
           Cancel

@@ -1,9 +1,8 @@
 import React, { useState, useMemo } from 'react'
 import AddPayment from './dashboard/modal/addPayment'
-import useFetch from './useFetch'
 
 const Payment = () => {
-  const { data: payment } = useFetch('getpayment.php')
+  const [payment] = useState([])
   const [data, setData] = useState({ vis: false })
   //   const elementRef = useRef(null);
   const handleClose = (e) => {

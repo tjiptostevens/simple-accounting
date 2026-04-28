@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Routes, Route } from "react-router-dom";
-import "./assets/css/home.css";
 import Nav from "./site/nav";
 import Dash from "./dashboard/dash";
 import SideNav from "./dashboard/sideNav";
@@ -20,27 +19,17 @@ import Order from "./order";
 import Payment from "./payment";
 import TrialBalance from "./report/trialBalance";
 import BalanceSheet from "./report/balanceSheet";
-import useDate from "./useDate";
 import EquityChange from "./report/equityChange";
 import ClosingJournal from "./report/closingJournal";
 
 const Home = (props) => {
-  const [data, setData] = useState("");
-  const { now } = useDate();
-  let period = JSON.parse(localStorage.getItem("period"));
-  useEffect(() => {}, []);
-  if (Date.parse(now) > Date.parse(period.end)) {
-    console.log(Date.parse(now) - Date.parse(period.end));
-  }
   return (
-    <div className="w-100" style={{ height: "100vh", width: "100vw" }}>
-      {/* {console.log(Date.parse(now))}
-      {console.log(Date.parse(period.end))} */}
+    <div className="w-full" style={{ height: "100vh", width: "100vw" }}>
       <Nav />
       <div className="__main">
         <div className="__body">
           <div
-            className="w-100"
+            className="w-full"
             style={{
               display: "flex",
               flexDirection: "row",

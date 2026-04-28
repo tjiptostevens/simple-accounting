@@ -1,18 +1,18 @@
 import React, { useState, useMemo } from "react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { reqCoaList, reqJournalEntry, reqPeriod } from "../reqFetch";
 
 const CashFlow = () => {
   const [data, setData] = useState({ period: "" });
-  const { data: period } = useQuery("period", reqPeriod);
+  const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod });
   const [vis, setVis] = useState({ modal: false });
-  const { data: journalEntry } = useQuery("journalEntry", reqJournalEntry);
+  const { data: journalEntry } = useQuery({ queryKey: ['journalEntry'], queryFn: reqJournalEntry });
   const {
     data: coaList,
     error,
     isError,
     isLoading,
-  } = useQuery("coaList", reqCoaList);
+  } = useQuery({ queryKey: ['coaList'], queryFn: reqCoaList });
 
   // create a new COA
   let newCoa = [];
@@ -93,14 +93,14 @@ const CashFlow = () => {
     <>
       {/* Component Title */}
       <div
-        className="w-100"
+        className="w-full"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
         <div className=" __content_title">Cash Flow</div>
         {/* add User + search */}
         <div className=" __search_bar">
           <select
-            className="form-control m-1"
+            className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
             name="period"
             onChange={handleChange}
             id="period"
@@ -114,14 +114,14 @@ const CashFlow = () => {
             ))}
           </select>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: "fit-content" }}
           >
             <i className="bi bi-arrow-right-square"></i>
           </button>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: "fit-content" }}
           >
@@ -130,7 +130,7 @@ const CashFlow = () => {
         </div>
       </div>
       <hr style={{ margin: "0" }} />
-      <div className="w-100" style={{ height: "25px" }}></div>
+      <div className="w-full" style={{ height: "25px" }}></div>
       <div className="row col-md-12" style={{ paddingLeft: "25px" }}>
         <div
           className="row col-md-12"

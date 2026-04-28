@@ -1,22 +1,16 @@
 import React, { useState, useMemo, useReducer } from 'react'
 import AddJournal from '../modal/addJournal'
-import useFetch from '../../useFetch'
 import { useNavigate } from 'react-router-dom'
 import Modal from '../../site/modal'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { reqJournal, reqJournalList, reqPeriod } from '../../reqFetch'
 import { showFormattedDate } from '../../custom/dateFn'
 
 const Journal = () => {
-  let periodStorage = localStorage.getItem('period')
-  let periodStor = JSON.parse(periodStorage)
-  const { data: period } = useQuery('period', reqPeriod)
-  const { data: journal, error, isError, isLoading } = useQuery(
-    'journal',
-    reqJournal,
-  )
+  const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod })
+  const { data: journal, error, isError, isLoading } = useQuery({ queryKey: ['journal'], queryFn: reqJournal })
   // const { data: journal } = useFetch('getjournal.php')
-  const { data: journalList } = useQuery('journallist', reqJournalList)
+  const { data: journalList } = useQuery({ queryKey: ['journallist'], queryFn: reqJournalList })
   // const { data: journalList } = useFetch('getjournallist.php')
   const navigate = useNavigate()
   const [data, setData] = useState({ vis: false })
@@ -95,18 +89,18 @@ const Journal = () => {
 
       {/* Component Title */}
       <div
-        className="w-100"
+        className="w-full"
         style={{ display: 'flex', justifyContent: 'space-between' }}
       >
         <div className=" __content_title">Journal Entries</div>
         {/* add User + search */}
         <div className="" style={{ display: 'flex' }}>
           <div
-            className="col"
+            className=""
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <input
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               type="search"
               name="search"
               placeholder="Search by text"
@@ -114,19 +108,19 @@ const Journal = () => {
             />
           </div>
           <div
-            className="col"
+            className=""
             style={{ display: 'flex', alignItems: 'center' }}
           >
             {/* <input
               list="type"
-              className="col-md-3"
+              className="md:w-3/12"
               style={{ padding: "5px 10px", border: "none" }}
               type="text"
               name="search_type"
               onChange={handleChange}
             /> */}
             <select
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               name="period"
               onChange={handleChange}
               id="period"
@@ -140,7 +134,7 @@ const Journal = () => {
               ))}
             </select>
             <select
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               name="search_type"
               onChange={handleChange}
               id="type"
@@ -159,18 +153,18 @@ const Journal = () => {
             </select>
           </div>
           <div
-            className="col"
+            className=""
             style={{ display: 'flex', alignItems: 'center' }}
           >
             {/* <input
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               type="date"
               name="start_date"
               placeholder="Type to search"
               onChange={handleChange}
             /> */}
             <input
-              className="form-control m-1"
+              className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
               type="date"
               name="end_date"
               value={data.end_date}
@@ -178,7 +172,7 @@ const Journal = () => {
             />
           </div>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => setVis({ ...vis, modal: !vis.modal, value: 1 })}
           >
             <i className="bi bi-plus"></i>
@@ -188,10 +182,10 @@ const Journal = () => {
       </div>
 
       <hr style={{ margin: '0' }} />
-      <div className="w-100" style={{ height: '25px' }}></div>
-      <div className="row col-md-12" style={{ paddingLeft: '25px' }}>
+      <div className="w-full" style={{ height: '25px' }}></div>
+      <div className="flex flex-wrap w-full" style={{ paddingLeft: '25px' }}>
         <div
-          className="row d-none d-md-flex col-md-12"
+          className="hidden md:flex w-full"
           style={{
             color: 'white',
             textAlign: 'left',
@@ -199,54 +193,54 @@ const Journal = () => {
             fontWeight: '600',
           }}
         >
-          <div className="col-md-2">Number</div>
-          <div className="col-md-3">Title</div>
-          <div className="col-md-2">Type</div>
-          <div className="col-md-2" style={{ textAlign: 'center' }}>
+          <div className="md:w-2/12">Number</div>
+          <div className="md:w-3/12">Title</div>
+          <div className="md:w-2/12">Type</div>
+          <div className="md:w-2/12" style={{ textAlign: 'center' }}>
             Debit
           </div>
-          <div className="col-md-2" style={{ textAlign: 'center' }}>
+          <div className="md:w-2/12" style={{ textAlign: 'center' }}>
             Credit
           </div>
-          <div className="col-md-1"></div>
+          <div className="md:w-1/12"></div>
         </div>
         <hr />
       </div>
 
-      <div className="w-100" style={{ overflowY: 'auto' }}>
-        <div className="row col-md-12" style={{ paddingLeft: '25px' }}>
+      <div className="w-full" style={{ overflowY: 'auto' }}>
+        <div className="flex flex-wrap w-full" style={{ paddingLeft: '25px' }}>
           {journalFil?.map((e, i) => (
             <div key={i}>
               <div
-                className="row col-md-12"
+                className="flex flex-wrap w-full"
                 style={{
                   color: 'white',
                   textAlign: 'left',
                   fontWeight: '100',
                 }}
               >
-                <div className="col-md-2 col-6">
+                <div className="md:w-2/12 w-1/2">
                   <b>{e.name} </b>
                   <br />
                   <small>
                     <i>{showFormattedDate(e.posting_date)}</i>
                   </small>
                 </div>
-                <div className="col-md-3 col-12">{e.title}</div>
-                <div className="col-md-2 col-4">{e.type}</div>
-                <div className="col-md-2 col-4" style={{ textAlign: 'right' }}>
+                <div className="md:w-3/12 w-full">{e.title}</div>
+                <div className="md:w-2/12 w-1/3">{e.type}</div>
+                <div className="md:w-2/12 w-1/3" style={{ textAlign: 'right' }}>
                   {Number(e.total_debit)
                     .toFixed(2)
                     .replace(/\d(?=(\d{3})+\.)/g, '$&.')}
                 </div>
-                <div className="col-md-2 col-4" style={{ textAlign: 'right' }}>
+                <div className="md:w-2/12 w-1/3" style={{ textAlign: 'right' }}>
                   {Number(e.total_credit)
                     .toFixed(2)
                     .replace(/\d(?=(\d{3})+\.)/g, '$&.')}
                 </div>
                 {data.i === i && data.det ? (
                   <div
-                    className="col-md-1"
+                    className="md:w-1/12"
                     style={{ textAlign: 'right' }}
                     onClick={() => setData({ ...data, i: i, det: false })}
                     // onMouseOver={() => setData({ ...data, i: i, det: true })}
@@ -259,7 +253,7 @@ const Journal = () => {
                   </div>
                 ) : (
                   <div
-                    className="col-md-1"
+                    className="md:w-1/12"
                     style={{ textAlign: 'right' }}
                     onClick={() => handleJournalDet(i, e.name)}
                     onMouseOver={(e) =>
@@ -280,7 +274,7 @@ const Journal = () => {
               {data.i === i && data.det ? (
                 <>
                   <div
-                    className="row-md-12"
+                    className="flex flex-wrap w-full"
                     style={{
                       color: 'white',
                       textAlign: 'left',
@@ -290,7 +284,7 @@ const Journal = () => {
                   >
                     {/* {JSON.stringify(journalListFil)} */}
                     <div
-                      className="row col-md-12 card"
+                      className="flex flex-wrap w-full card"
                       style={{
                         color: 'white',
                         textAlign: 'left',
@@ -302,8 +296,8 @@ const Journal = () => {
                         margin: '0px',
                       }}
                     >
-                      <div className="col-md-1"></div>
-                      <div className="col-md-4">
+                      <div className="md:w-1/12"></div>
+                      <div className="md:w-4/12">
                         <hr style={{ margin: '0', padding: '0' }} />
                         <div>
                           {e.type === 'Depreciation' ? (
@@ -325,14 +319,14 @@ const Journal = () => {
                           )}
                         </div>
                       </div>
-                      <div className="col-md-7">
+                      <div className="md:w-7/12">
                         Detail
                         {journalListFil
                           .sort((a, b) => (a.idx > b.idx ? 1 : -1))
                           .map((e, i) => (
                             <div
                               key={i}
-                              className="row col-md-12"
+                              className="flex flex-wrap w-full"
                               style={{
                                 color: 'white',
                                 textAlign: 'left',
@@ -342,12 +336,12 @@ const Journal = () => {
                                 lineHeight: '1',
                               }}
                             >
-                              <div className="col-md-5 col-4">
+                              <div className="md:w-5/12 w-1/3">
                                 <i className="bi bi-dash"></i>
                                 {e.acc} - {e.acc_name}
                               </div>
                               <div
-                                className="col-md-3 col-4"
+                                className="md:w-3/12 w-1/3"
                                 style={{ textAlign: 'right' }}
                               >
                                 {Number(e.debit)
@@ -355,14 +349,14 @@ const Journal = () => {
                                   .replace(/\d(?=(\d{3})+\.)/g, '$&.')}
                               </div>
                               <div
-                                className="col-md-3 col-4"
+                                className="md:w-3/12 w-1/3"
                                 style={{ textAlign: 'right' }}
                               >
                                 {Number(e.credit)
                                   .toFixed(2)
                                   .replace(/\d(?=(\d{3})+\.)/g, '$&.')}
                               </div>
-                              <div className="col-md-1 d-none"></div>
+                              <div className="md:w-1/12 hidden"></div>
                             </div>
                           ))}
                       </div>
@@ -378,7 +372,7 @@ const Journal = () => {
           ))}
         </div>
       </div>
-      <div className="w-100" style={{ height: '50px' }}></div>
+      <div className="w-full" style={{ height: '50px' }}></div>
     </>
   )
 }

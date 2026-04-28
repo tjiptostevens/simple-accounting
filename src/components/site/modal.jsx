@@ -27,7 +27,7 @@ const Modal = (props) => {
             </div>
             <hr />
             <div
-              className="w-100 justify-content-around"
+              className="w-full"
               style={{
                 textAlign: 'justify',
                 height: 'auto',

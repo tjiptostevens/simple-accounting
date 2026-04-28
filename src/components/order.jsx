@@ -1,9 +1,8 @@
 import React, { useState, useMemo } from 'react'
 import AddOrder from './dashboard/modal/addOrder'
-import useFetch from './useFetch'
 
 const Order = () => {
-  const { data: order } = useFetch('getorder.php')
+  const [order] = useState([])
   const [data, setData] = useState({ vis: false })
   //   const elementRef = useRef(null);
   const handleClose = (e) => {

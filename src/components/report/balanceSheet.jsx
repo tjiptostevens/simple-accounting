@@ -1,21 +1,18 @@
 import React, { useState, useMemo } from 'react'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import CoaLists from '../dashboard/master/coaLists'
 import { reqCoa, reqCoaList, reqJournalEntry, reqPeriod } from '../reqFetch'
-import useFetch from '../useFetch'
 import ReportList from './reportList'
 import ReportTable from './reportTable'
 
 const BalanceSheet = () => {
   const [data, setData] = useState({ period: '' })
   const [vis, setVis] = useState({ modal: false })
-  let periodStorage = localStorage.getItem('period')
-  // let period = JSON.parse(periodStorage);
   // const { data: coaList } = useFetch('getcoalist.php')
 
-  const { data: period } = useQuery('period', reqPeriod)
-  const { data: coa } = useQuery('coa', reqCoa)
-  const { data: journalEntry } = useQuery('journalEntry', reqJournalEntry)
+  const { data: period } = useQuery({ queryKey: ['period'], queryFn: reqPeriod })
+  const { data: coa } = useQuery({ queryKey: ['coa'], queryFn: reqCoa })
+  const { data: journalEntry } = useQuery({ queryKey: ['journalEntry'], queryFn: reqJournalEntry })
   const { data: coaList, error, isError, isLoading } = useQuery(
     'coaList',
     reqCoaList,
@@ -165,7 +162,7 @@ const BalanceSheet = () => {
     <>
       {/* Component Title */}
       <div
-        className="w-100"
+        className="w-full"
         style={{ display: 'flex', justifyContent: 'space-between' }}
       >
         <div className=" __content_title">Balance Sheet</div>
@@ -176,7 +173,7 @@ const BalanceSheet = () => {
           style={{ display: 'flex', alignItems: 'center' }}
         >
           <input
-            className="form-control m-1"
+            className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
             type="search"
             name="search"
             placeholder="Search by text"
@@ -184,7 +181,7 @@ const BalanceSheet = () => {
           />
         </div> */}
           <select
-            className="form-control m-1"
+            className="m-1 w-full px-3 py-1.5 bg-[#212529] text-white border border-gray-600 rounded focus:outline-none focus:border-blue-500"
             name="period"
             onChange={handleChange}
             id="period"
@@ -196,14 +193,14 @@ const BalanceSheet = () => {
             ))}
           </select>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: 'fit-content' }}
           >
             <i className="bi bi-arrow-right-square"></i>
           </button>
           <button
-            className="btn btn-primary m-1"
+            className="m-1 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors cursor-pointer"
             onClick={() => window.print()}
             style={{ minWidth: 'fit-content' }}
           >
@@ -212,7 +209,7 @@ const BalanceSheet = () => {
         </div>
       </div>
       <hr style={{ margin: '0' }} />
-      <div className="w-100" style={{ height: '25px' }}></div>
+      <div className="w-full" style={{ height: '25px' }}></div>
       <div
         className="row"
         style={{
@@ -325,7 +322,7 @@ const BalanceSheet = () => {
           </div>
         </div>
       </div>
-      <div className="w-100" style={{ overflowY: 'auto' }}>
+      <div className="w-full" style={{ overflowY: 'auto' }}>
         <div className="row col-md-12" style={{ paddingLeft: '25px' }}>
           <div
             className="row col-md-12"
@@ -350,7 +347,7 @@ const BalanceSheet = () => {
           )} */}
             <hr />
             <div
-              className="w-100"
+              className="w-full"
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -370,7 +367,7 @@ const BalanceSheet = () => {
             </div>
             <hr />
           </div>
-          <div className="w-100" style={{ height: '25px' }}></div>
+          <div className="w-full" style={{ height: '25px' }}></div>
           <div
             className="row col-md-12"
             style={{
@@ -393,7 +390,7 @@ const BalanceSheet = () => {
           )} */}
             <hr />
             <div
-              className="w-100"
+              className="w-full"
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -414,7 +411,7 @@ const BalanceSheet = () => {
             </div>
             <hr />
           </div>
-          <div className="w-100" style={{ height: '25px' }}></div>
+          <div className="w-full" style={{ height: '25px' }}></div>
           <div
             className="row col-md-12"
             style={{
@@ -449,7 +446,7 @@ const BalanceSheet = () => {
           )} */}
             <hr />
             <div
-              className="w-100"
+              className="w-full"
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -470,7 +467,7 @@ const BalanceSheet = () => {
             </div>
             <hr />
             <div
-              className="w-100"
+              className="w-full"
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -491,9 +488,9 @@ const BalanceSheet = () => {
             </div>
             <hr />
           </div>
-          <div className="w-100" style={{ height: '25px' }}></div>
+          <div className="w-full" style={{ height: '25px' }}></div>
 
-          <div className="w-100" style={{ height: '100px' }}></div>
+          <div className="w-full" style={{ height: '100px' }}></div>
         </div>
       </div>
     </>

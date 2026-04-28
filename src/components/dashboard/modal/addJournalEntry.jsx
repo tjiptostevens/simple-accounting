@@ -22,11 +22,10 @@ const AddJournalEntry = (props) => {
       party: '',
       debit: '',
       credit: '',
-      company: localStorage.getItem('company'),
+      company: '',
     })
   }
   const handleChange = (e) => {
-    // console.log(e);
     props.handleRow(e)
     setData({ ...data, [e.target.name]: e.target.value })
   }
@@ -38,122 +37,60 @@ const AddJournalEntry = (props) => {
         element={<></>}
         handleClose={() => setVis({ modal: false })}
       />
-      <div className="row col-md-12" style={{ margin: '0px', padding: '0px' }}>
+      <div className="flex flex-wrap w-full" style={{ margin: '0px', padding: '0px' }}>
         <label className="label_title">Accounting Entries</label>
         <small>{JSON.stringify(data)}</small>
         <hr />
         <small>{console.log(props)}</small>
         <div
-          className="row col-md-12 "
+          className="flex flex-wrap w-full"
           style={{
             margin: '0px',
             padding: '5px 0 0 0',
           }}
         >
           <div
-            className="col-md-1"
+            className="md:w-1/12"
             style={{ padding: '5px 10px', border: '1px solid #b3b3b3' }}
           >
             No.
           </div>
           <div
-            className="col-md-3"
+            className="md:w-3/12"
             style={{ padding: '5px 10px', border: '1px solid #b3b3b3' }}
           >
             Account
           </div>
           <div
-            className="col-md-2"
+            className="md:w-2/12"
             style={{ padding: '5px 10px', border: '1px solid #b3b3b3' }}
           >
             Party Type
           </div>
           <div
-            className="col-md-2"
+            className="md:w-2/12"
             style={{ padding: '5px 10px', border: '1px solid #b3b3b3' }}
           >
             Party
           </div>
           <div
-            className="col-md-2"
+            className="md:w-2/12"
             style={{ padding: '5px 10px', border: '1px solid #b3b3b3' }}
           >
             Debit
           </div>
           <div
-            className="col-md-2"
+            className="md:w-2/12"
             style={{ padding: '5px 10px', border: '1px solid #b3b3b3' }}
           >
             Credit
           </div>
         </div>
 
-        {/* {props.entry.map((e, i) => (
-          <>
-            <div
-              key={i}
-              className="row col-md-12 "
-              style={{
-                margin: "0px",
-                padding: "0px",
-              }}
-            >
-              <input
-                onChange={handleChange}
-                disabled={true}
-                type="text"
-                className="col-md-1"
-                style={{ padding: "5px 10px", border: "none" }}
-                name="idx"
-                // value={e.idx}
-              />
-              <input
-                onChange={handleChange}
-                type="text"
-                className="col-md-3"
-                style={{ padding: "5px 10px", border: "none" }}
-                name="acc"
-                // value={e.acc}
-              />
-              <input
-                onChange={handleChange}
-                type="text"
-                className="col-md-2"
-                style={{ padding: "5px 10px", border: "none" }}
-                name="party_type"
-                // value={e.party_type}
-              />
-              <input
-                onChange={handleChange}
-                type="text"
-                className="col-md-2"
-                style={{ padding: "5px 10px", border: "none" }}
-                name="party"
-                // value={e.party}
-              />
-              <input
-                onChange={handleChange}
-                type="text"
-                className="col-md-2"
-                style={{ padding: "5px 10px", border: "none" }}
-                name="debit"
-                // value={e.debit}
-              />
-              <input
-                onChange={handleChange}
-                type="text"
-                className="col-md-2"
-                style={{ padding: "5px 10px", border: "none" }}
-                name="credit"
-                // value={e.credit}
-              />
-            </div>
-          </>
-        ))} */}
         <div style={{ margin: '0px', padding: '5px 0' }}>
           <button
             style={{ padding: '0 5px', minWidth: 'unset' }}
-            className="btn btn-primary btn-sm"
+            className="px-3 py-1 bg-green-600 hover:bg-green-500 text-white text-xs rounded transition-colors cursor-pointer"
             onClick={handleAddRow}
           >
             Add Row
