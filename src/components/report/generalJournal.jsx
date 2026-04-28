@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { showFormattedDate } from '../custom/dateFn'
 import { reqJournalEntry, reqJournalList, reqPeriod } from '../reqFetch'
-// import useFetch from '../useFetch'
 import ReportTable from './reportTable'
 
 const GeneralJournal = () => {
@@ -34,7 +33,6 @@ const GeneralJournal = () => {
   //   isError,
   //   isLoading,
   // } = useQuery({ queryKey: ['journalEntry'], queryFn: reqJournalEntry });
-  // const { data: generalJournal } = useFetch('getjournalentry.php')
 
   const handleChange = (e) => {
     console.log(`${[e.target.name]}`, e.target.value)
