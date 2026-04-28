@@ -61,7 +61,13 @@ npm install
 
 ### 3. Configure environment variables
 
-Create a `.env` file in the project root:
+Copy the example file and fill in your Supabase credentials:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env`:
 
 ```env
 VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co
@@ -70,19 +76,31 @@ VITE_SUPABASE_ANON_KEY=<your-anon-key>
 
 You can find these values in your Supabase project under **Settings → API**.
 
-### 4. Apply the database schema
+### 4. Apply the database schema and seed data
 
-Run the migrations against your Supabase project using the Supabase CLI:
+Run all migrations against your Supabase project using the Supabase CLI:
 
 ```bash
 supabase db push
 ```
 
-Or copy and run the SQL files in `supabase/migrations/` directly from the Supabase SQL editor in this order:
+Or copy and run the SQL files in `supabase/migrations/` directly from the Supabase **SQL editor** in this order:
 
-1. `00001_schema.sql` — tables
-2. `00002_rls.sql` — Row-Level Security policies
-3. `00003_views_functions.sql` — views and helper functions
+| File | Purpose |
+|------|---------|
+| `00001_schema.sql` | Tables |
+| `00002_rls.sql` | Row-Level Security policies |
+| `00003_views_functions.sql` | Views and helper functions |
+| `00004_seed.sql` | Demo user, demo company and mockup data |
+
+After running `00004_seed.sql` you can log in immediately with the demo account:
+
+| Field | Value |
+|-------|-------|
+| **Email** | `demo@tjip.my.id` |
+| **Password** | `demo@demo1` |
+
+The seed is **idempotent** — running it a second time does nothing.
 
 ### 5. Start the development server
 
@@ -91,6 +109,22 @@ npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## Deploy to Netlify
+
+1. Push this repository to GitHub (or fork it).
+2. In [Netlify](https://app.netlify.com), click **Add new site → Import an existing project** and select the repository.
+3. Netlify will auto-detect the build settings from `netlify.toml`:
+   - **Build command**: `npm run build`
+   - **Publish directory**: `dist`
+4. Under **Site settings → Environment variables**, add:
+   - `VITE_SUPABASE_URL` — your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` — your Supabase anon key
+5. Click **Deploy site**.
+
+> The `netlify.toml` already includes an `/*` → `/index.html` redirect rule so that React Router works correctly on direct URL access and page refresh.
 
 ## Available Scripts
 
