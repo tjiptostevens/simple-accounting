@@ -1,155 +1,275 @@
 # Simple Accounting
 
-A web-based accounting application built with React and [Supabase](https://supabase.com). It covers the full bookkeeping workflow — from chart of accounts and journal entries through to financial reports and closing entries.
+A web-based accounting application built with React, Vite, and Supabase.
 
-## Features
+This README is written for open-source users who want to:
 
-- **Authentication** — Supabase Auth with protected routes and user profiles
-- **Master Data**
-  - Company profile
-  - Chart of Accounts (Assets, Liability, Equity, Income, Expense)
-  - Accounting Periods
-  - Customers
-  - Users
-- **Activities**
-  - General Journal entry
-  - Fixed Asset Depreciation
-- **Reports**
-  - General Journal
-  - General Ledger
-  - Trial Balance
-  - Profit & Loss
-  - Balance Sheet
-  - Cash Flow Statement
-  - Statement of Equity Changes
-  - Closing Journal
-- **Orders & Payments**
-- **Excel Import** — bulk-import journal data from `.xlsx` files
+1. Fork the repository
+2. Connect their own Supabase project
+3. Deploy their fork to Netlify
+
+Estimated setup time: 20 to 40 minutes.
+
+## What You Get
+
+- Authentication with Supabase Auth
+- Master data modules (COA, period, customer, user)
+- Journal and depreciation activities
+- Financial reports (ledger, trial balance, profit and loss, balance sheet, cashflow, equity changes, closing journal)
+- Orders and payments
+- Excel import support
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| UI Framework | [React 18](https://react.dev) |
-| Build Tool | [Vite](https://vitejs.dev) |
-| Styling | [Tailwind CSS v4](https://tailwindcss.com) |
-| Routing | [React Router v6](https://reactrouter.com) |
-| Data Fetching | [TanStack React Query v5](https://tanstack.com/query) |
-| Backend / Auth / DB | [Supabase](https://supabase.com) |
-| Select Component | [react-select](https://react-select.com) |
-| Excel Parsing | [xlsx](https://sheetjs.com) |
+| Layer                 | Technology      |
+| --------------------- | --------------- |
+| Frontend              | React 18 + Vite |
+| Styling               | Tailwind CSS v4 |
+| Routing               | React Router v6 |
+| Data Fetching         | TanStack Query  |
+| Backend/Auth/Database | Supabase        |
+| Hosting               | Netlify         |
 
-## Prerequisites
+## Setup Map
 
-- Node.js 18+
-- A [Supabase](https://supabase.com) project
+Complete the setup in this order:
 
-## Getting Started
+1. GitHub platform setup (fork and clone)
+2. Supabase platform setup (project, keys, migrations, seed)
+3. Local machine setup (run and verify)
+4. Netlify platform setup (build and environment variables)
 
-### 1. Clone the repository
+---
+
+## 1) GitHub Platform Setup
+
+### Step 1. Fork this repository
+
+1. Open this repository on GitHub.
+2. Click Fork.
+3. Create the fork under your own account.
+
+Checkpoint:
+
+- You should now have your own repo URL, for example:
+  - https://github.com/your-username/simple-accounting
+
+### Step 2. Clone your fork
+
+Use one of the commands below.
+
+Git Bash or macOS/Linux:
 
 ```bash
-git clone https://github.com/tjiptostevens/simple-accounting.git
+git clone https://github.com/your-username/simple-accounting.git
 cd simple-accounting
 ```
 
-### 2. Install dependencies
+PowerShell:
+
+```powershell
+git clone https://github.com/your-username/simple-accounting.git
+Set-Location simple-accounting
+```
+
+### Step 3. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configure environment variables
+Checkpoint:
 
-Copy the example file and fill in your Supabase credentials:
+- Installation finishes without dependency errors.
 
-```bash
-cp .env.example .env
-```
+---
 
-Edit `.env`:
+## 2) Supabase Platform Setup
+
+### Step 1. Create a Supabase project
+
+1. Go to https://supabase.com and create a new project.
+2. Wait until the project status is ready.
+
+### Step 2. Copy API values
+
+In Supabase Dashboard:
+
+1. Open Settings
+2. Open API
+3. Copy:
+   - Project URL
+   - anon public key
+
+### Step 3. Create local environment file
+
+Create a .env file in the project root with:
 
 ```env
-VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co
-VITE_SUPABASE_ANON_KEY=<your-anon-key>
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-public-key
 ```
 
-You can find these values in your Supabase project under **Settings → API**.
+Security note:
 
-### 4. Apply the database schema and seed data
+- Do not put your service role key in frontend environment variables.
+- Only use the anon public key in this app.
 
-Run all migrations against your Supabase project using the Supabase CLI:
+### Step 4. Apply migrations
+
+This project includes SQL migration files in supabase/migrations.
+
+Recommended CLI flow:
 
 ```bash
+supabase login
+supabase link --project-ref your-project-ref
 supabase db push
 ```
 
-Or copy and run the SQL files in `supabase/migrations/` directly from the Supabase **SQL editor** in this order:
+Migration files:
 
-| File | Purpose |
-|------|---------|
-| `00001_schema.sql` | Tables |
-| `00002_rls.sql` | Row-Level Security policies |
-| `00003_views_functions.sql` | Views and helper functions |
-| `00004_seed.sql` | Demo user, demo company and mockup data |
+| File                      | Purpose                                       |
+| ------------------------- | --------------------------------------------- |
+| 00001_schema.sql          | Create base tables                            |
+| 00002_rls.sql             | Enable and define row-level security policies |
+| 00003_views_functions.sql | Create SQL views and helper functions         |
+| 00004_seed.sql            | Insert demo data for dummy/testing use        |
 
-After running `00004_seed.sql` you can log in immediately with the demo account:
+If you prefer SQL Editor, run files in exact order from top to bottom.
 
-| Field | Value |
-|-------|-------|
-| **Email** | `demo@tjip.my.id` |
-| **Password** | `demo@demo1` |
+### Step 5. Optional dummy seed login
 
-The seed is **idempotent** — running it a second time does nothing.
+If seed data is applied, demo login is:
 
-### 5. Start the development server
+| Field    | Value           |
+| -------- | --------------- |
+| Email    | demo@tjip.my.id |
+| Password | demo@demo1      |
+
+Seed note:
+
+- 00004_seed.sql is intended for demo/testing.
+- Avoid demo seed data in production unless you intentionally want it.
+
+Checkpoint:
+
+- Tables exist
+- Policies exist
+- Demo account can authenticate (if seeded)
+
+---
+
+## 3) Local Machine Setup
+
+### Step 1. Start development server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open http://localhost:5173
+
+### Step 2. Smoke test
+
+1. Open login page
+2. Sign in with seeded demo account (if seed applied)
+3. Open dashboard
+4. Verify one simple data action works
+
+Common first-run issues:
+
+1. Blank page or auth errors
+   - Check .env values and restart dev server.
+2. Database relation errors
+   - Migrations may not have been applied to the same project used by your .env.
+3. CLI permission issues
+   - Confirm you are logged in and linked to the correct project ref.
 
 ---
 
-## Deploy to Netlify
+## 4) Netlify Platform Setup
 
-1. Push this repository to GitHub (or fork it).
-2. In [Netlify](https://app.netlify.com), click **Add new site → Import an existing project** and select the repository.
-3. Netlify will auto-detect the build settings from `netlify.toml`:
-   - **Build command**: `npm run build`
-   - **Publish directory**: `dist`
-4. Under **Site settings → Environment variables**, add:
-   - `VITE_SUPABASE_URL` — your Supabase project URL
-   - `VITE_SUPABASE_ANON_KEY` — your Supabase anon key
-5. Click **Deploy site**.
+### Step 1. Import your fork into Netlify
 
-> The `netlify.toml` already includes an `/*` → `/index.html` redirect rule so that React Router works correctly on direct URL access and page refresh.
+1. Open https://app.netlify.com
+2. Add new site
+3. Import from Git provider
+4. Select your forked repository
 
-## Available Scripts
+### Step 2. Confirm build settings
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start the Vite development server |
-| `npm run build` | Build for production (output in `dist/`) |
-| `npm run preview` | Preview the production build locally |
+This project uses netlify.toml:
+
+- Build command: npm run build
+- Publish directory: dist
+
+### Step 3. Add environment variables
+
+In Site settings, add:
+
+- VITE_SUPABASE_URL
+- VITE_SUPABASE_ANON_KEY
+
+Use the same values as your local .env.
+
+### Step 4. Deploy
+
+1. Trigger deploy
+2. Open the generated Netlify URL
+
+Checkpoint:
+
+- App loads successfully
+- Login works
+- Direct URL refresh works (SPA redirect is already configured in netlify.toml)
+
+---
+
+## Important Production Note
+
+Netlify deploy does not run Supabase migrations automatically.
+
+Recommended release order:
+
+1. Run Supabase migrations first
+2. Deploy frontend to Netlify after schema changes are applied
+
+For team workflow, use CI to run supabase db push before production deployment.
+
+---
+
+## Keeping Your Fork Updated
+
+When upstream adds new migrations:
+
+1. Pull latest upstream changes
+2. Run supabase db push again on your project
+3. Redeploy your Netlify site
+
+---
+
+## Scripts
+
+| Command         | Description                       |
+| --------------- | --------------------------------- |
+| npm run dev     | Start local development server    |
+| npm run build   | Build production bundle           |
+| npm run preview | Preview production bundle locally |
+| npm run test    | Run test suite once               |
+
+---
 
 ## Project Structure
 
-```
+```text
 src/
-├── components/
-│   ├── dashboard/      # Master data pages (COA, period, company, customer, user)
-│   │   ├── activity/   # Journal and depreciation
-│   │   └── master/
-│   ├── report/         # Financial report pages
-│   ├── excel/          # Excel import
-│   ├── form/           # Shared form components
-│   ├── custom/         # Reusable UI components
-│   └── site/           # Nav, login, protected route
-├── context/            # React context (AuthContext)
-├── lib/                # Supabase client
-└── main.jsx
+  components/
+    dashboard/
+    report/
+    site/
+  context/
+  lib/
 supabase/
-└── migrations/         # SQL migration files
+  migrations/
 ```
