@@ -76,26 +76,33 @@ const SideNav = () => {
 
       <hr className="border-app-border mx-3" />
 
-      {/* MASTER (admin only) */}
+      {/* CONFIGURATION (admin only) */}
       {isAdmin && (
         <>
-          <SectionLabel>MASTER</SectionLabel>
+          <SectionLabel>CONFIGURATION</SectionLabel>
           <ul className="list-none m-0 p-0 px-2 space-y-0.5">
             <NavItem to="/d/company" icon="bi-building">Company</NavItem>
-            <NavItem to="/d/chartofaccount" icon="bi-bar-chart-steps">Chart of Account</NavItem>
             <NavItem to="/d/period" icon="bi-calendar3">Period</NavItem>
             <NavItem to="/d/user" icon="bi-person-square">User</NavItem>
-            <NavItem to="/d/customer" icon="bi-people">Customer</NavItem>
           </ul>
           <hr className="border-app-border mx-3 mt-2" />
         </>
       )}
 
+      {/* MASTER DATA */}
+      <SectionLabel>MASTER DATA</SectionLabel>
+      <ul className="list-none m-0 p-0 px-2 space-y-0.5">
+        <NavItem to="/d/chartofaccount" icon="bi-bar-chart-steps">Chart of Account</NavItem>
+        <NavItem to="/d/customer" icon="bi-people">Customer</NavItem>
+        <NavItem to="/d/depreciation" icon="bi-box-seam">Fixed Assets</NavItem>
+      </ul>
+
+      <hr className="border-app-border mx-3 mt-2" />
+
       {/* ACTIVITY */}
       <SectionLabel>ACTIVITY</SectionLabel>
       <ul className="list-none m-0 p-0 px-2 space-y-0.5">
-        <NavItem to="/d/journal" icon="bi-file-earmark-break">Journal</NavItem>
-        <NavItem to="/d/depreciation" icon="bi-graph-down-arrow">Depreciation</NavItem>
+        <NavItem to="/d/journal" icon="bi-file-earmark-break">Journal Entry</NavItem>
       </ul>
 
       <hr className="border-app-border mx-3 mt-2" />
