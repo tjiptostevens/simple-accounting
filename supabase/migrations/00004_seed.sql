@@ -504,9 +504,6 @@ begin
     (v_company_id,v_jv25,'JV/2024/0025','515','Expense',500000,0,     '2024-06-30',v_user_id),
     (v_company_id,v_jv25,'JV/2024/0025','122','Assets', 0,     500000,'2024-06-30',v_user_id);
 
-  -- suppress unused-variable warnings
-  perform v_jv03, v_jv07, v_jv11, v_jv16, v_jv20, v_jv24, v_jv25;
-
   -- ── 9. Orders ────────────────────────────────────────────
   insert into public.orders
     (company_id, customer_id, name, order_date, total, status, created_by)
